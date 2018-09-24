@@ -1,0 +1,47 @@
+<header id="profile-header">
+    {{>nav}}
+    <div class="center">
+        <div class="img-container">
+            <img id="profile-img" src="/resources/images/person.jpg" alt="{{user.name}}">
+        </div>
+        <div class="info">
+            <span>{{ user.name }}</span><br>
+            <button class="btn btn-full" onclick="smoothScroll('section-details')" >About Me</button>
+        </div>
+    </div>
+</header>
+<section id="section-details">
+    <h2>Details</h2>
+    <div class="row">
+        <div class="col span-1-of-4">
+            <ul>
+                <li><a href="">Personal</a></li>
+                <li><a href="">Academic</a></li>
+                <li><a href="">Other</a></li>
+            </ul>
+        </div>
+        <div class="col span-3-of-4">
+            <div class="data-field">
+                Name : {{ user.name }}
+            </div>
+            <div class="data-field">
+                Username : {{ user.username }}
+            </div>
+            <div class="data-field">
+                Email : {{ profile.email }}
+            </div>
+            <div class="data-field">
+                Class : {{ profile.class}}
+            </div>
+            <div class="data-field">
+                Subject : {{ profile.subject.name}}
+            </div>
+            <div class="data-field">
+                Department : {{ profile.department.name }}
+            </div>
+            <div class="data-field">
+                Designation : {{ designation.name }}
+            </div>
+        </div>
+    </div>
+</section>

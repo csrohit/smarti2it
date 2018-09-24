@@ -1,0 +1,40 @@
+ <div class="form-container">
+        <form action="javascript:student.create()">
+            <h3>Create Student</h3>
+            <div class="input-field">
+                <label for="name">Name :</label>
+                <input type="text" name="name" id="name">
+            </div>
+            <div class="input-field">
+                <label for="emil">Email : </label>
+                <input type="email" name="email" id="email">
+            </div>
+            <div class="input-field">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username">
+            </div>
+            <div class="input-field">
+                <label for="roll_no">Roll no. : </label>
+                <input type="number" name="roll_no" id="roll_no" min="1" max="78" value=55>
+            </div>
+            <div class="input-field">
+                <label for="designation">Designation : </label>
+                <select name="designation" id="designation">
+                    {{#each designations}}
+                        <option value="{{value}}">{{name}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="input-field">
+                <label for="department">Department</label>
+                <select name="department" id="department">
+                    {{#each departments}}
+                        <option value="{{value}}">{{name}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="input-field">
+                <button type="submit" name="student-submit">Submit</button>
+            </div>
+        </form>
+    </div>

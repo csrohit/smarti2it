@@ -1,0 +1,92 @@
+<nav class="clearfix">
+    {{> nav}}
+    {{#if success_msg}}
+        <div id="modal">
+            <div class="modal-content msg success_msg">
+                <p>{{ success_msg }}</p>
+            </div>
+        </div>
+    {{/if}}
+    {{#if error_msg}}
+        <div id="modal">
+            <div class="modal-content msg error_msg">
+                <p>{{ error_msg }}</p>
+            </div>
+        </div>
+    {{/if}}
+</nav>
+
+
+<form method="post" name="regUser" action="/users/admin">    <h3>Register</h3>
+    <div class="input-field">
+        <label for="name">Name : </label><br>
+        <input type="text" name="name" placeholder="name...">
+    </div>
+    <div class="input-field">
+        <label for="email">Email : </label><br>
+        <input type="email" name="email" placeholder="email...">
+    </div>
+    <div class="input-field">
+        <label for="username">Username:</label><br>
+        <input type="text" name="username" placeholder="username...">
+    </div>
+
+    <div class="input-field student">
+        <label for="department">Branch</label><br>
+        <select name="department">
+            <option value="1" selected>Electronics and Telecommunications</option>
+            <option value="2">Information Technology</option>
+            <option value="3">Computer Science</option>
+        </select>
+    </div>
+
+    <!--        Fork-->
+    <div class="input-field">
+        <label for="">Rank : </label>
+        &nbsp;&nbsp;<input type="radio" name="rank" class="rank" onChange="checkRank()" value="1">&nbsp;&nbsp;&nbsp;&nbsp;<label for="">Professor</label>&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="radio" name="rank" class="rank" onChange="checkRank()" value="0" checked>&nbsp;&nbsp;&nbsp;&nbsp;<label for="">Student</label></div>
+
+
+    <!--        For Faculty -->
+    <div class="input-field teacher">
+        <label for="subject">Subject</label>
+        <select name="subject">
+            <option value="21">Data structures and algorithms</option>
+            <option value="22">Signals and systems</option>
+            <option value="23">Electronuc devices and circuits</option>
+            <option value="24">ECM</option>
+            <option value="25">Digital electronics</option>
+            <option value=""></option>
+            <option value="21">Engineering Mathematics III</option>
+            <option value="22">Integrated Circuits</option>
+            <option value="23">Control System</option>
+            <option value="24">Analog Communication</option>
+            <option value="25">Object Oriented Programming</option>
+            <option value="26">Employability Skill Development</option>
+            <option value="31">Mechatronics</option>
+            <option value="32">Electronic system design</option>
+            <option value="33">Micro-controller</option>
+            <option value="34">Electromagnetics</option>
+            <option value="35">Digital signal processing</option>
+            <option value="36">Digital communication</option>
+        </select>
+    </div>
+
+    <!--       For Students     -->
+
+    <div class="input-field student">
+        <label for="year">Year</label><br>
+        <select name="year">
+            <option value="1">FE</option>
+            <option value="2" selected>SE</option>
+            <option value="3">TE</option>
+            <option value="4">BE</option>
+        </select>
+    </div>
+    <div class="input-field student">
+        <label for="roll_no">Roll no.</label>
+        <input type="number" name="roll_no" min="1" max="80" value="57">
+    </div>
+    <!--        Fork ends-->
+    <div class="input-field"><button type="submit" name="reg-submit" value="Register">Register</button></div>
+</form>
