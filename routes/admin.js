@@ -98,7 +98,8 @@ router.post('/create-class', async (req,res)=>{
 
 });
 router.get('/test', async (req,res)=>{
-    Subject.fetchSubject({_id})
+    let subject = await Subject.fetchSubject({_id:'5b9f6999ba8e9617780585f4'});
+    res.send(subject);
 });
 
 

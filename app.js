@@ -66,6 +66,11 @@ app.use('/',routes);
 app.use('/api',api);
 app.use('/ajax',ajax);
 app.use('/admin',admin);
+app.use(function(req, res){
+    res.type('text/plain');
+    res.status(404);
+    res.send('404 - Not Found');
+});
 
 app.listen(process.env.PORT,()=>{
     console.log("Server started on port " + process.env.PORT);
