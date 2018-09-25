@@ -39,7 +39,29 @@ const subject = {
         let subjects = await ajax('GET','/ajax/get-subjects');
         subjects = JSON.parse(subjects);
         let table = document.createElement('table');
+        let tableContent = `<tr>
+                    <th>No. </th>
+                    <th>Name</th>
+                    <th>Links</th>
+                 </tr>`;
+        let len = subjects.length,i=0;
+        while (i<len){
+            tableContent+=`
+                           <tr>
+                           <td>` + i + `</td>
+                           <td><a href="` +subjects[i].value + `" >`+ subjects[i].name+`</a></td>
+                           <td>   <a class="delete" href="javascript:subject.delete('`+ subjects[i].value +`')">delete</a> <a class="green" href="javascript:subject.edit('\`+ subjects[i].value +\`')">edit</a></td>
+                           </tr>
+                          `;
+            i++;
+        }
+        table.innerHTML = tableContent  ;
         result.appendChild(table);
+    },
+        delete: async (id)=>{
+        let data = "id="+id;
+        let result = await ajax('DELETE','/ajax/subject',data);
+        alert(result);
     }
 };
 const teacher = {
@@ -184,7 +206,7 @@ function ajax(method, theUrl, data=null) {
             }
         };
         req.open(method, theUrl, true);
-        if (method.toLowerCase() == 'post') {
+        if (method.toLowerCase() !== 'get') {
             req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
             req.send(data);
         } else req.send();

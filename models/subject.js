@@ -44,3 +44,36 @@ module.exports.fetchSubjects = ()=>{
      })
   });
 };
+module.exports.delete = id=>{
+  return new Promise((resolve,reject)=>{
+      Subject.deleteOne({'_id':id},(err)=>{
+          if (!err){
+              // delete all the references of subjects
+                /*
+                * 1. Teacher
+                * 2. Class
+                * 3. Department
+                */
+               Subject.fetchSubject()
+              return resolve(true);
+          }
+          return reject("Error deleting Subject " + err)
+      })
+  })
+};
+module.exports.fetchSubject = (query,options)=>{
+    return new Promise( async (resolve , reject)=>{
+        query = Subject.findOne(query);
+        let len = options && options.length,i=0;
+        while (i<len){
+            query.populate(options[i]);
+            i++;
+        }
+        try {
+            let subject = await query.exec();
+            resolve(subject);
+        }catch (e) {
+            reject("Error finding teacher "+e);
+        }
+    })
+};

@@ -96,7 +96,10 @@ router.post('/create-student',async (req,res)=>{
 });
 router.post('/create-class', async (req,res)=>{
 
-})
+});
+router.get('/test', async (req,res)=>{
+    Subject.fetchSubject({_id})
+});
 
 
 

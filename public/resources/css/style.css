@@ -464,3 +464,13 @@ section{
 /*--------------------------
         TESTING CODE
 --------------------------*/
+table{
+    border-collapse: collapse;
+    width: auto;
+}
+.delete{
+    color: red;
+}
+.green{
+    color: green;
+}
