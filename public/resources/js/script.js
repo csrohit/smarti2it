@@ -58,7 +58,7 @@ const subject = {
         table.innerHTML = tableContent  ;
         result.appendChild(table);
     },
-        delete: async (id)=>{
+    delete: async (id)=>{
         let data = "id="+id;
         let result = await ajax('DELETE','/ajax/subject',data);
         alert(result);

@@ -13,6 +13,7 @@ const express = require('express'),
         users = require('./routes/users'),
         api = require('./routes/api'),
         ajax = require('./routes/ajax'),
+        node = require('./routes/node');
         admin = require('./routes/admin');
 
 // LOAD ENV FILE
@@ -66,6 +67,7 @@ app.use('/',routes);
 app.use('/api',api);
 app.use('/ajax',ajax);
 app.use('/admin',admin);
+app.use('/node',node);
 app.use(function(req, res){
     res.type('text/plain');
     res.status(404);

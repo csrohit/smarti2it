@@ -3,16 +3,16 @@ const express = require('express'),
         Designation = require('../models/designation'),
         Subject = require('../models/subject'),
         Department = require('../models/department'),
+        subject = require('./handlers/subject');
         Teacher= require('../models/teacher');
 
 
 
+router.use('/subject',subject);
 router.get('/create-user',(req,res)=>{
     res.render('auth/register');
 });
-router.get('/subject',(req,res)=>{
-    res.render('ajax/subject',{layout:null});
-});
+
 router.get('/create-teacher',async (req,res)=>{
     try {
         let designations = await Designation.fetchDesignations(),
@@ -50,7 +50,7 @@ router.get('create-timetable',(req,res)=>{
 router.get('/create-office',(req,res)=>{
     res.render('ajax/office',{layout:null});
 });
-router.get('/create-lab',(req,es)=>{
+router.get('/create-lab',(req,res)=>{
    res.render('ajax/lab',{layout:null});
 });
 router.get('/create-designation',(req,res)=>{
@@ -68,21 +68,7 @@ router.get('/get-teachers',async (req,res)=>{
   res.json(teachers);
 
 });
-router.get('/get-subjects',async (req,res)=>{
-    let subjects = await Subject.fetchSubjects();
-    subjects = parseForSelect(subjects);
 
-   res.send(subjects);
-});
-router.delete('/subject', async (req,res)=>{
-    try {
-        if (await Subject.delete(req.body.id))
-            return res.send(true);      // deleted at least one element
-        else return res.send(false);
-    }catch (e) {
-        return res.send(false);         // if failed to delete the subject
-    }
-});
 module.exports = router;
 
 // User defined functios
