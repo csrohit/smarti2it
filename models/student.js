@@ -57,3 +57,30 @@ module.exports.fetchStudent = (query,options)=>{
       }
   })
 };
+module.exports.update = async newStudent=>{
+    /*
+    * requires a valid subject object
+    * */
+    return new Promise((resolve,reject)=>{
+        try {
+            let subject = Subject.fetchSubject({'_id':newStudent._id});
+            let data = {
+                name:newStudent.name,
+                roll_no:newStudent.roll_no,
+                email:newStudent.email,
+                department: newStudent.department,
+                class: newStudent.class
+            };
+            console.log(newStudent);
+            console.log(newStudent._id);
+            Subject.updateOne({'_id':newStudent._id},data,(err,subject)=>{
+                if (err) return reject("Error updating student "+err);
+                else return resolve(subject);
+            });
+        } catch (e) {
+            return reject("Error finding student for update "+e);
+        }
+    });
+
+
+};
