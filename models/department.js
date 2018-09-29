@@ -37,17 +37,31 @@ const Department = module.exports = mongoose.model('Department',departmentSchema
 module.exports.createDepartment = newDepartment=>{
   return new Promise((resolve,reject)=>{
       newDepartment.save((err,newDepartment)=>{
-          if (err)reject("Error creating department "+err);
-          else resolve(newDepartment);
+          if (err) return reject("Error creating department "+err);
+          else return resolve(newDepartment);
       })
   })
 };
-module.exports.fetchDepartments = ()=>{
-  return new Promise((resolve,reject)=>{
-     Department.find({},(err,departments)=>{
-         if (!err)resolve(departments);
-         else reject(err);
-     })
-  });
-
+module.exports.fetchDepartments = (query,options)=>{
+    /*
+    * query should be a standard mongoose query
+    * */
+    console.log(query);
+    return new Promise( async (resolve , reject)=>{
+        query = Department.find(query);
+        let len = options && options.length,i=0;
+        console.log(len);
+        console.log(options);
+        while (i<len){
+            query.populate(options[i]);
+            i++;
+        }
+        try {
+            let result = await query.exec();
+            console.log(result);
+            return resolve(result);
+        }catch (e) {
+            return reject("Error finding departments "+e);
+        }
+    })
 };

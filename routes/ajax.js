@@ -12,7 +12,6 @@ router.use('/subject',subject);
 router.get('/create-user',(req,res)=>{
     res.render('auth/register');
 });
-
 router.get('/create-teacher',async (req,res)=>{
     try {
         let designations = await Designation.fetchDesignations(),

@@ -36,3 +36,22 @@ module.exports.createClass = newClass=>{
      })
   });
 };
+module.exports.fetchSubjects = (query,options)=>{
+    /*
+    * query should be a standard mongoose query
+    * */
+    return new Promise( async (resolve , reject)=>{
+        query = Class.find(query);
+        let len = options && options.length,i=0;
+        while (i<len){
+            query.populate(options[i]);
+            i++;
+        }
+        try {
+            let result = await query.exec();
+            resolve(result);
+        }catch (e) {
+            reject("Error finding classes "+e);
+        }
+    })
+};

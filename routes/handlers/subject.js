@@ -3,29 +3,47 @@ const express = require('express'),
     Designation = require('../../models/designation'),
     Subject = require('../../models/subject'),
     Department = require('../../models/department'),
-    Teacher= require('../../models/teacher');
+    Teacher= require('../../models/teacher'),
+    Function = require('../../functions');
 
+router.get('/test', async (req,res)=>{
+    let departments = await Department.fetchDepartments(),
+        teachers = await Teacher.fetchTeachers();
+    departments = Function.parseForSelect(departments);
+    teachers = Function.parseForSelect(teachers);
+    return res.send(teachers);
+});
 router.get('/',async (req,res)=>{
-    /*
-    * Fetch the data from the database to be populated in the subject creation form
-    * and render the view along with the parsed data for the select field
-    * */
-    let teachers = await Teacher.fetchTeachers();
-    res.render('ajax/subject',{layout:null});
+   if (req.headers.accept === 'application/json'){
+       /*
+       * Send the object array parsed for table  display
+       * */
+       return res.json({'response':'json'});
+   }else if (req.headers.accept === 'text/html'){
+           /*
+           * send subject create view form
+           * */
+           return res.send("Subject create form")
+   }
+    console.log("Unknown header for subject get handlers/subject.js");
+    return res.send('Unhandled request');
 });
-router.get('/view',(req,res)=>{
-    /*
-    * Get the Subject from the database with given id and populate the required field
-    * render the subject profile view with data
-    * */
-   return res.send("Subject profile view");
-});
-router.get('/update',(req,res)=>{
-    /*
-    * Get the subject to be updated from the database and render the subject create
-    * form along with the pre-dilled subject form data
-    * */
-   return res.send("get update form route");
+router.get('/:id', async (req,res)=>{
+   let id = req.params.id;
+   console.log(req.headers.accept);
+   if (req.headers.accept === 'application/json'){
+       /*
+       * Send subject data as json
+       * */
+       return res.send("Subject data in json for "+id);
+   } else if (req.headers.accept === 'text/html'){
+       /*
+       * Send subject data as text/html for rendering
+       * */
+       return res.send("Subject profile view for "+id);
+   }
+   console.log("Unknown header for subject id request handlers/subject.js");
+   return res.send('Unhandled request');
 });
 router.delete('/', async (req,res)=>{
     /*
@@ -41,20 +59,30 @@ router.delete('/', async (req,res)=>{
     }
 });
 router.put('/',async (req,res)=>{
-    /*
-    * Get the required data-fields about the subject and validate
-    * update the subject in the database here.....
-    * */
-    try {
-        let data = req.body,
-            id = req.body._id,
-            name = data.name;
-        let result = await Subject.update({'_id':id,'name':name});
-        return res.send(result);
-    }catch (e) {
-        console.log(e);
-        return res.send("Server error occurred");
+    if (req.headers.accept === 'application/json'){
+        /*
+        * process the update request here
+        * */
+        try {
+            let data = req.body,
+                id = req.body._id,
+                name = data.name,
+                result = await Subject.update({'_id':id,'name':name});
+            return res.send(result);
+        }catch (e) {
+            console.log(e);
+            return res.send("Server error occurred");
+        }
     }
+    else if (req.headers.accept === 'text/html'){
+        /*
+        * Send update form
+        *
+        * */
+        return res.send('subject update form');
+    }
+    console.log("Unknown header for update handlers/subject.js");
+    return res.send('Unhandled request');
 });
 router.post('/',(req,res)=>{
     let subject = new  Subject({

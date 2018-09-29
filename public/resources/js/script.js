@@ -10,7 +10,7 @@ const subject = {
     getForm: () => {
         let result = document.getElementById('result');
         result.innerHTML = '';
-        ajax('GET', '/ajax/subject', null)
+        ajax('GET', '/ajax/subject',"text/html", null)
             .then(response => {
                 result.innerHTML = response;
             })
@@ -23,20 +23,20 @@ const subject = {
               result = document.getElementById('result');
         getPostData(form)
             .then(data=>{
-                ajax('POST','/admin/create-subject',data)
+                ajax('POST','/admin/create-subject','text/html',data)
                     .then(response=>render(result,response))
                     .catch(e=>render(result,e));
             })
             .catch(e=>render(result,e));
     },
     update : async ()=>{
-        let res = await ajax('PATCH','/admin/test');
+        let res = await ajax('put','/ajax/subject',"application/json");
         alert(res);
     },
     listAll:async ()=>{
         const result = document.getElementById('result');
         result.innerHTML = '';
-        let subjects = await ajax('GET','/ajax/get-subjects');
+        let subjects = await ajax('GET','/ajax/subject/list','application/json');
         subjects = JSON.parse(subjects);
         let table = document.createElement('table');
         let tableContent = `<tr>
@@ -48,9 +48,9 @@ const subject = {
         while (i<len){
             tableContent+=`
                            <tr>
-                           <td>` + i + `</td>
+                           <td>` + (i+1) + `</td>
                            <td><a href="` +subjects[i].value + `" >`+ subjects[i].name+`</a></td>
-                           <td>   <a class="delete" href="javascript:subject.delete('`+ subjects[i].value +`')">delete</a> <a class="green" href="javascript:subject.edit('\`+ subjects[i].value +\`')">edit</a></td>
+                           <td>   <a class="delete" href="javascript:subject.delete('`+ subjects[i].value +`')">delete</a> <a class="green" href="javascript:subject.update('\`+ subjects[i].value +\`')">update</a></td>
                            </tr>
                           `;
             i++;
@@ -60,14 +60,14 @@ const subject = {
     },
     delete: async (id)=>{
         let data = "id="+id;
-        let result = await ajax('DELETE','/ajax/subject',data);
+        let result = await ajax('DELETE','/ajax/subject','text/html',data);
         alert(result);
     }
 };
 const teacher = {
   getForm : ()=>{
       let result = document.getElementById('result');
-      ajax('GET', '/ajax/create-teacher', null)
+      ajax('GET', '/ajax/create-teacher','text/html', null)
           .then(response =>render(result,response))
           .catch(e=>render(result,e));
   },
@@ -76,7 +76,7 @@ const teacher = {
           result = document.getElementById('result');
       try {
           let data = await getPostData(form),
-              response = ajax('POST','/admin/create-teacher',data);
+              response = ajax('POST','/admin/create-teacher','text/html',data);
             render(result,response);
       }catch (e) {
           render(result,e);
@@ -86,7 +86,7 @@ const teacher = {
 const student = {
     getForm : async ()=>{
         let result = document.getElementById('result');
-        ajax('GET', '/ajax/create-student', null)
+        ajax('GET', '/ajax/create-student','text/html', null)
             .then(response =>render(result,response))
             .catch(e=>render(result,e));
     },
@@ -95,7 +95,7 @@ const student = {
             result = document.getElementById('result');
         try {
             let data = await getPostData(form),
-                response = ajax('POST','/admin/create-student',data);
+                response = ajax('POST','/admin/create-student','text/html',data);
             render(result,response);
         }catch (e) {
             render(result,e);
@@ -105,7 +105,7 @@ const student = {
 const designation = {
     getForm:()=>{
         const result = document.getElementById('result');
-        ajax('GET','/ajax/create-designation',null)
+        ajax('GET','/ajax/create-designation','text/html',null)
             .then(response=>render(result,response))
             .catch(e=>render(result,e));
     },
@@ -115,7 +115,7 @@ const designation = {
         getPostData(form)
             .then(data=>{
                 console.log(data);
-                ajax('POST','/admin/create-designation',data)
+                ajax('POST','/admin/create-designation','text/html',data)
                     .then(response=>render(result,response))
                     .catch(e=>render(result,e));
             })
@@ -125,7 +125,7 @@ const designation = {
 const department = {
     getForm:()=>{
         const result = document.getElementById('result');
-        ajax('GET','/ajax/create-department')
+        ajax('GET','/ajax/create-department','text/html')
             .then(response=>render(result,response))
             .catch(e=>render(result,e));
     },
@@ -133,7 +133,7 @@ const department = {
         const form =document.querySelector('form'),
             result = document.getElementById('result');
         let data = await getPostData(form),
-            response = await ajax('POST','/admin/create-department',data);
+            response = await ajax('POST','/admin/create-department','text/html',data);
 
         render(result,response);
     }
@@ -141,7 +141,7 @@ const department = {
 const classs={
     getForm:()=>{
         const result = document.getElementById('result');
-        ajax('GET','/ajax/create-class')
+        ajax('GET','/ajax/create-class','text/html')
             .then(response=>render(result,response))
             .catch(e=>render(result,e));
     },
@@ -149,7 +149,7 @@ const classs={
         const form =document.querySelector('form'),
             result = document.getElementById('result');
         let data = await getPostData(form),
-            response = await ajax('POST','/admin/create-department',data);
+            response = await ajax('POST','/admin/create-department','text/html',data);
 
         render(result,response);
     },
@@ -161,8 +161,8 @@ const classs={
         let department = select.value;
         let teachers=[],subjects=[];
         try {
-            teachers = await ajax('GET','/ajax/get-teachers?department='+department,null);
-            subjects = await ajax('GET','/ajax/get-subjects?department='+department,null);
+            teachers = await ajax('GET','/ajax/get-teachers?department='+department,'text/html',null);
+            subjects = await ajax('GET','/ajax/get-subjects?department='+department,'text/html',null);
             subjects = JSON.parse(subjects);
             teachers = JSON.parse(teachers);
             let len = teachers.length;
@@ -191,7 +191,7 @@ const classs={
 
 // User defined functions
 
-function ajax(method, theUrl, data=null) {
+function ajax(method, theUrl,responseType, data=null) {
     return new Promise((resolve,reject)=>{
         let req = new XMLHttpRequest();
         req.onreadystatechange = function () {
@@ -206,6 +206,7 @@ function ajax(method, theUrl, data=null) {
             }
         };
         req.open(method, theUrl, true);
+        req.setRequestHeader('Accept', responseType);
         if (method.toLowerCase() !== 'get') {
             req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
             req.send(data);

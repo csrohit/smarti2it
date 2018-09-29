@@ -36,13 +36,24 @@ module.exports.createSubject = (newSubject)=>{
         });
   });
 };
-module.exports.fetchSubjects = ()=>{
-  return new Promise((resolve,reject)=>{
-     Subject.find({},(err,subjects)=>{
-         if (err)reject("Error fetching subjects "+err);
-         else resolve(subjects);
-     })
-  });
+module.exports.fetchSubjects = (query,options)=>{
+    /*
+    * query should be a standard mongoose query
+    * */
+    return new Promise( async (resolve , reject)=>{
+        query = Subject.find(query);
+        let len = options && options.length,i=0;
+        while (i<len){
+            query.populate(options[i]);
+            i++;
+        }
+        try {
+            let subjects = await query.exec();
+            resolve(subjects);
+        }catch (e) {
+            reject("Error finding subjects "+e);
+        }
+    })
 };
 module.exports.delete = id=>{
   return new Promise((resolve,reject)=>{
