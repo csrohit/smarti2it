@@ -3,8 +3,6 @@ document.addEventListener('DOMContentLoaded', function () {
     subject.getForm();
 });
 
-
-
 // Admin Options
 const subject = {
     getForm: () => {
@@ -29,14 +27,16 @@ const subject = {
             })
             .catch(e=>render(result,e));
     },
-    update : async ()=>{
-        let res = await ajax('put','/ajax/subject',"application/json");
-        alert(res);
+    update : async (id)=>{
+        let data = '_id='+id;
+        let response = await ajax('PUT','/ajax/subject','text/html',data);
+        let result = document.getElementById('result');
+        render(result,response)
     },
     listAll:async ()=>{
         const result = document.getElementById('result');
         result.innerHTML = '';
-        let subjects = await ajax('GET','/ajax/subject/list','application/json');
+        let subjects = await ajax('GET','/ajax/subject','application/json');
         subjects = JSON.parse(subjects);
         let table = document.createElement('table');
         let tableContent = `<tr>
@@ -50,7 +50,7 @@ const subject = {
                            <tr>
                            <td>` + (i+1) + `</td>
                            <td><a href="` +subjects[i].value + `" >`+ subjects[i].name+`</a></td>
-                           <td>   <a class="delete" href="javascript:subject.delete('`+ subjects[i].value +`')">delete</a> <a class="green" href="javascript:subject.update('\`+ subjects[i].value +\`')">update</a></td>
+                           <td>   <a class="delete" href="javascript:subject.delete('`+ subjects[i].value +`')">delete</a> <a class="green" href="javascript:subject.update('`+ subjects[i].value +`')">update</a></td>
                            </tr>
                           `;
             i++;
@@ -62,6 +62,28 @@ const subject = {
         let data = "id="+id;
         let result = await ajax('DELETE','/ajax/subject','text/html',data);
         alert(result);
+    },
+    departmentSelected: async ()=>{
+        let select = document.getElementById('department'),
+            teacherSelect = document.getElementById('teacher');
+        teacherSelect.options.length = 0;
+        let department = select.value;
+        let teachers=[];
+        try {
+            teachers = await ajax('GET','/ajax/teacher?department='+department,'application/json',null);
+            console.log(teachers);
+            teachers = JSON.parse(teachers);
+            let len = teachers.length;
+            while (len>0){
+                len--;
+                let option = document.createElement('option');
+                option.text = teachers[len].name;
+                option.value = teachers[len].value;
+                teacherSelect.add(option);
+            }
+        }catch (e) {
+            alert(e);
+        }
     }
 };
 const teacher = {
@@ -161,9 +183,7 @@ const classs={
         let department = select.value;
         let teachers=[],subjects=[];
         try {
-            teachers = await ajax('GET','/ajax/get-teachers?department='+department,'text/html',null);
-            subjects = await ajax('GET','/ajax/get-subjects?department='+department,'text/html',null);
-            subjects = JSON.parse(subjects);
+            teachers = await ajax('GET','/ajax/teacher?department='+department,'application/json',null);
             teachers = JSON.parse(teachers);
             let len = teachers.length;
             while (len>0){
@@ -195,7 +215,7 @@ function ajax(method, theUrl,responseType, data=null) {
     return new Promise((resolve,reject)=>{
         let req = new XMLHttpRequest();
         req.onreadystatechange = function () {
-            if (req.readyState == 4) {
+            if (req.readyState === 4) {
                 switch (req.status) {
                     case 200:
                         resolve(req.responseText);

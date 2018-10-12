@@ -7,24 +7,30 @@ const express = require('express'),
     Function = require('../../functions');
 
 router.get('/test', async (req,res)=>{
-    let departments = await Department.fetchDepartments(),
-        teachers = await Teacher.fetchTeachers();
-    departments = Function.parseForSelect(departments);
-    teachers = Function.parseForSelect(teachers);
-    return res.send(teachers);
+
 });
 router.get('/',async (req,res)=>{
    if (req.headers.accept === 'application/json'){
        /*
        * Send the object array parsed for table  display
        * */
-       return res.json({'response':'json'});
+       let subjects = await Subject.fetchSubjects();
+       subjects = Function.parseForSelect(subjects);
+       return res.send(subjects);
    }else if (req.headers.accept === 'text/html'){
            /*
            * send subject create view form
            * */
-           return res.send("Subject create form")
+            try {
+                let departments = await Department.fetchDepartments();
+                departments = Function.parseForSelect(departments);
+                return res.render('ajax/subject',{layout:null,departments:departments});
+            }catch (e) {
+                console.log(e);
+                return res.send("Server error occurred");
+            }
    }
+
     console.log("Unknown header for subject get handlers/subject.js");
     return res.send('Unhandled request');
 });
@@ -59,27 +65,31 @@ router.delete('/', async (req,res)=>{
     }
 });
 router.put('/',async (req,res)=>{
-    if (req.headers.accept === 'application/json'){
-        /*
-        * process the update request here
-        * */
-        try {
-            let data = req.body,
-                id = req.body._id,
-                name = data.name,
-                result = await Subject.update({'_id':id,'name':name});
-            return res.send(result);
-        }catch (e) {
-            console.log(e);
-            return res.send("Server error occurred");
+    try {
+        if (req.headers.accept === 'application/json'){
+            /*
+            * process the update request here
+            * */
+                let data = req.body,
+                    id = req.body._id,
+                    name = data.name,
+                    result = await Subject.update({'_id':id,'name':name});
+                return res.send(result);
         }
-    }
-    else if (req.headers.accept === 'text/html'){
-        /*
-        * Send update form
-        *
-        * */
-        return res.send('subject update form');
+        else if (req.headers.accept === 'text/html'){
+            /*
+            * Send update form
+            *
+            * */
+                let id = req.body._id,
+                    subject = await Subject.fetchSubject({_id:id}),
+                    departments = await Department.fetchDepartments();
+                departments = Function.parseForSelect(departments);
+            return res.render('ajax/subject',{layout:null,subject:subject,departments:departments});
+        }
+    }catch (e) {
+        console.log(e);
+        return res.send("Server error occurred");
     }
     console.log("Unknown header for update handlers/subject.js");
     return res.send('Unhandled request');

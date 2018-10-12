@@ -3,12 +3,14 @@ const express = require('express'),
         Designation = require('../models/designation'),
         Subject = require('../models/subject'),
         Department = require('../models/department'),
-        subject = require('./handlers/subject');
+        subject = require('./handlers/subject'),
+        teacher = require('./handlers/teacher'),
         Teacher= require('../models/teacher');
 
 
 
 router.use('/subject',subject);
+router.use('/teacher',teacher);
 router.get('/create-user',(req,res)=>{
     res.render('auth/register');
 });

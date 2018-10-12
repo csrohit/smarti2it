@@ -46,19 +46,15 @@ module.exports.fetchDepartments = (query,options)=>{
     /*
     * query should be a standard mongoose query
     * */
-    console.log(query);
     return new Promise( async (resolve , reject)=>{
         query = Department.find(query);
         let len = options && options.length,i=0;
-        console.log(len);
-        console.log(options);
         while (i<len){
             query.populate(options[i]);
             i++;
         }
         try {
             let result = await query.exec();
-            console.log(result);
             return resolve(result);
         }catch (e) {
             return reject("Error finding departments "+e);

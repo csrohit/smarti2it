@@ -1,4 +1,5 @@
 const mongoose = require('mongoose'),
+    ObjectId = require('mongoose').Types.ObjectId,
     Teacher = require('./teacher'),
     Department = require('./department'),
     Class = require('./class');
@@ -76,8 +77,10 @@ module.exports.fetchSubject = (query,options)=>{
     /*
     * return s a single subject, query must be a standard query eg. {"_id":"5babd111ce1b43095b413d04"}
     * */
-
     return new Promise( async (resolve , reject)=>{
+        if (!ObjectId.isValid(query._id)){
+            return reject('Invalid ObjectId');
+        }
         query = Subject.findOne(query);
         let len = options && options.length,i=0;
         while (i<len){
@@ -86,9 +89,9 @@ module.exports.fetchSubject = (query,options)=>{
         }
         try {
             let subject = await query.exec();
-            resolve(subject);
+            return resolve(subject);
         }catch (e) {
-            reject("Error finding teacher "+e);
+            return reject("Error finding subject "+e);
         }
     })
 };
