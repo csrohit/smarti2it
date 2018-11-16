@@ -52,14 +52,14 @@ module.exports.createUser = (newUser)=>{
         })
     })
 }
-module.exports.fetchByUsername = username=>{
-return new Promise((resolve,reject)=>{
-    User.findOne({username: username}).populate('designation').exec((err,user)=>{
-        if (err)reject("Error finding user "+err);
-        else resolve(user);
-    })
-})
-};
+// module.exports.fetchByUsername = username=>{
+// return new Promise((resolve,reject)=>{
+//     User.findOne({username: username}).populate('designation').exec((err,user)=>{
+//         if (err)reject("Error finding user "+err);
+//         else resolve(user);
+//     })
+// })
+//};
 module.exports.fetchUserById = id=>{
     return new Promise((resolve,reject)=>{
         User.findById(id).exec((err,user)=>{
@@ -76,7 +76,7 @@ return new Promise((resolve,reject)=>{
     });
 })
 };
-module.exports.get= (username,params) =>{
+module.exports.fetchByUsername= (username,params) =>{
     return new Promise(async (resolve,reject)=>{
         let query = User.findOne({username:username});
         let i=0,len = params && params.length;
@@ -90,5 +90,24 @@ module.exports.get= (username,params) =>{
             }
             reject("Error finding user "+err);
         })
+    })
+};
+module.exports.fetchUsers = (query,options)=>{
+    /*
+    * query should be a standard mongoose query
+    * */
+    return new Promise( async (resolve , reject)=>{
+        query = User.find(query);
+        let len = options && options.length,i=0;
+        while (i<len){
+            query.populate(options[i]);
+            i++;
+        }
+        try {
+            let users = await query.exec();
+            resolve(users);
+        }catch (e) {
+            reject("Error finding users "+e);
+        }
     })
 };

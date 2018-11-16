@@ -10,10 +10,14 @@ const express = require('express'),
         app = express(),
         routes = require('./routes/index'),
         users = require('./routes/users'),
-        api = require('./routes/api'),
+        api = require('./routes/api/api'),
         ajax = require('./routes/ajax'),
         node = require('./routes/node');
-        admin = require('./routes/admin');
+        admin = require('./routes/admin'),
+        teacher = require('./routes/handlers/teacher'),
+        subject = require('./routes/handlers/subject'),
+        department = require('./routes/handlers/department'),
+        student = require('./routes/handlers/student');
 
 // LOAD ENV FILE
 if (result.error) {
@@ -21,7 +25,7 @@ if (result.error) {
 }
 
 // Connect to database
-mongoose.connect(process.env.DB_HOST+"/"+process.env.DB_NAME, { useNewUrlParser: true });
+mongoose.connect(process.env.DB_HOST+'/'+process.env.DB_NAME, { useNewUrlParser: true });
 const db = mongoose.connection;
 db.on('connected', function () {
     console.log('Connected to Database');
@@ -64,6 +68,10 @@ app.use(express.static('public'));
 app.use('/users',users);
 app.use('/',routes);
 app.use('/api',api);
+app.use('/teacher',teacher);
+app.use('/student',student);
+app.use('/department',department);
+app.use('/subject',subject);
 app.use('/ajax',ajax);
 app.use('/admin',admin);
 app.use('/node',node);

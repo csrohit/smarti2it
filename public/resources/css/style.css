@@ -443,7 +443,7 @@ section{
 }
 
 /*    lists     */
-.sub-list{
+/* .sub-list{
     margin-left: 10%;
     list-style: none;
     font-size: .8rem;
@@ -457,7 +457,7 @@ section{
 .parent-li:hover .sub-list{
     transition: all 5s;
     display: block;
-}
+} */
 
 
 

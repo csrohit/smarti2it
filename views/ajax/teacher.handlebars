@@ -1,18 +1,27 @@
-    <div class="form-container">
+` <div class="form-container">
         <form action="javascript:teacher.create()">
             <h3>Create teacher</h3>
             <div class="input-field">
                 <label for="name">Name :</label>
-                <input type="text" name="name" id="name">
+                <input type="text" name="name" id="name" {{# if teacher}}value="{{teacher.name}}"{{/if}}>
             </div>
             <div class="input-field">
                 <label for="email">Email : </label>
-                <input type="email" name="email" id="email">
-                </div>
-                <div class="input-field">
+                <input type="email" name="email" id="email" {{# if teacher}}value="{{teacher.email}}"{{/if}}>
+            </div>
+            <div class="input-field">
                     <label for="username">Username</label>
-                    <input type="text" name="username" id="username">
-                </div>
+                    <input type="text" name="username" id="username" {{# if teacher}}value="{{teacher.name}}"{{/if}}>
+            </div>
+        <div class="input-field">
+            <label for="department">Department:</label><br>
+            <select onchange="javascript:teacher.departmentSelected()" name="department" id="department">
+                <option selected value=""> - </option>
+                {{#each departments}}
+                <option value="{{value}}">{{name}}</option>
+                {{/each}}
+            </select>
+        </div>
             <div class="input-field">
                 <label for="subject">Subject : </label>
                 <select name="subject" id="subject">
@@ -26,14 +35,6 @@
                 <label for="designation">Designation : </label>
                 <select name="designation" id="designation">
                     {{#each designations}}
-                        <option value="{{value}}">{{name}}</option>
-                    {{/each}}
-                </select>
-            </div>
-            <div class="input-field">
-                <label for="department">Department</label>
-                <select name="department" id="department">
-                    {{#each departments}}
                         <option value="{{value}}">{{name}}</option>
                     {{/each}}
                 </select>

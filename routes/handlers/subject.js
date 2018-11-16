@@ -6,15 +6,18 @@ const express = require('express'),
     Teacher= require('../../models/teacher'),
     Function = require('../../functions');
 
-router.get('/test', async (req,res)=>{
-
-});
 router.get('/',async (req,res)=>{
    if (req.headers.accept === 'application/json'){
        /*
        * Send the object array parsed for table  display
        * */
-       let subjects = await Subject.fetchSubjects();
+        let query = req.query.department;
+        let subjects=null;
+        if(query)
+            subjects = await Subject.fetchSubjects({'department':query});            
+        else
+        subjects = await Subject.fetchSubjects();            
+       console.log(subjects);
        subjects = Function.parseForSelect(subjects);
        return res.send(subjects);
    }else if (req.headers.accept === 'text/html'){
@@ -97,7 +100,8 @@ router.put('/',async (req,res)=>{
 router.post('/',(req,res)=>{
     let subject = new  Subject({
         name: req.body.name,
-        university_code:req.body.university_code
+        university_code:req.body.university_code,
+        department : req.body.department
     });
     Subject.createSubject(subject)
         .then(subject=>{

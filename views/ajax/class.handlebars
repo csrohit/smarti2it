@@ -6,8 +6,9 @@
             <input type="text" name="name" id="name">
         </div>
         <div class="input-field">
-            <label for="department">Department</label>
-            <select onchange="javascript:classs.departmentSelected()" name="department" id="department">
+            <label for="department">Department:</label><br>
+            <select onchange="javascript:teacher.departmentSelected()" name="department" id="department">
+                <option selected value=""> - </option>
                 {{#each departments}}
                 <option value="{{value}}">{{name}}</option>
                 {{/each}}

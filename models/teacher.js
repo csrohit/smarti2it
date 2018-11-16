@@ -29,12 +29,15 @@ const Teacher = module.exports = mongoose.model('Teacher',teacherSchema);
 module.exports.createTeacher = newTeacher=>{
     return new Promise((resolve,reject)=>{
         newTeacher.save((err,newTeacher)=>{
-            if (err)reject("Error creating department "+err);
+            if (err)reject("Error creating teacher "+err);
             else resolve(newTeacher);
         })
     })
 };
 module.exports.fetchTeachers = (query,options)=>{
+    /* 
+    *   query sould be a standard mongoose query
+    *  */
     return new Promise( async (resolve , reject)=>{
         query = Teacher.find(query);
         let len = options && options.length,i=0;
@@ -50,23 +53,11 @@ module.exports.fetchTeachers = (query,options)=>{
         }
     })
 };
-module.exports.get = async (teacher,params) =>{
-  return new Promise((resolve,reject)=>{
-     let query = Teacher.find({});
-     let i=0,len = params.length;
-     while (i < len){
-         query.populate(params[i]);
-         i++;
-      }
-     query.exec((err,teacher)=>{
-         if (!err){
-             resolve(teacher);
-         }
-         reject("Error finding teacher " + err);
-     })
-  })
-};
+
 module.exports.fetchTeacher = (query,options)=>{
+    /*
+    * return s a single subject, query must be a standard query eg. {"_id":"5babd111ce1b43095b413d04"}
+    * */
     return new Promise( async (resolve , reject)=>{
         query = Teacher.findOne(query);
         let len = options && options.length,i=0;
@@ -76,9 +67,22 @@ module.exports.fetchTeacher = (query,options)=>{
         }
         try {
             let teacher = await query.exec();
-            resolve(teacher);
+            return resolve(teacher);
         }catch (e) {
-            reject("Error finding teacher "+e);
+            return reject("Error finding teacher "+e);
         }
     })
+};
+
+module.exports.update = ()=>{
+    return new Promise( async (resolve,reject)=>{
+        try{
+            let teacher = await Teacher.fetchTeacher({'_id':newTeacher._id});
+            let data = {
+                
+            };
+        }catch(e){
+            return reject("Error updating teacher "+e);
+        };
+    });
 };

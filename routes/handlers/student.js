@@ -11,7 +11,9 @@ router.get('/',async (req,res)=>{
     * and render the view along with the parsed data for the select field
     * */
     let teachers = await Teacher.fetchTeachers();
-    res.render('ajax/subject',{layout:null});
+    // res.render('ajax/subject',{layout:null});
+
+    res.download('./public/Express 4.x - API Reference.pdf');
 });
 router.get('/view',(req,res)=>{
     /*

@@ -13,6 +13,7 @@
         <div class="input-field">
             <label for="department">Department:</label><br>
             <select onchange="javascript:subject.departmentSelected()" name="department" id="department">
+                <option selected value=""> - </option>
                 {{#each departments}}
                 <option value="{{value}}">{{name}}</option>
                 {{/each}}

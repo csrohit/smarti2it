@@ -21,7 +21,7 @@ const subject = {
               result = document.getElementById('result');
         getPostData(form)
             .then(data=>{
-                ajax('POST','/admin/create-subject','text/html',data)
+                ajax('POST','/subject','text/html',data)
                     .then(response=>render(result,response))
                     .catch(e=>render(result,e));
             })
@@ -36,7 +36,7 @@ const subject = {
     listAll:async ()=>{
         const result = document.getElementById('result');
         result.innerHTML = '';
-        let subjects = await ajax('GET','/ajax/subject','application/json');
+        let subjects = await ajax('GET','/subject','application/json');
         subjects = JSON.parse(subjects);
         let table = document.createElement('table');
         let tableContent = `<tr>
@@ -87,23 +87,89 @@ const subject = {
     }
 };
 const teacher = {
-  getForm : ()=>{
+  getForm : async _id=>{
       let result = document.getElementById('result');
-      ajax('GET', '/ajax/create-teacher','text/html', null)
-          .then(response =>render(result,response))
-          .catch(e=>render(result,e));
+      let response=null;
+      try{
+          if(!_id){
+            response = await ajax('GET','/teacher','text/html');
+        }else{
+            response = await ajax('PUT','/teacher','text/html',"_id="+_id);
+          }
+          return render(result, response);
+      }catch(e){
+          return render(result,e);
+      }
   },
   create : async ()=>{
       const form = document.querySelector('form'),
           result = document.getElementById('result');
       try {
           let data = await getPostData(form),
-              response = ajax('POST','/admin/create-teacher','text/html',data);
+              response = await ajax('POST','/admin/create-teacher','text/html',data);
             render(result,response);
       }catch (e) {
           render(result,e);
       }
-  }
+  },
+  listAll : async ()=>{
+      const result = document.getElementById('result');
+      try{
+        const result = document.getElementById('result');
+        result.innerHTML = '';
+        let teachers = await ajax('GET','/teacher','application/json');
+        teachers = JSON.parse(teachers);
+        let table = document.createElement('table');
+        let tableContent = `<tr>
+                    <th>No. </th>
+                    <th>Name</th>
+                    <th>Links</th>
+                 </tr>`;
+        let len = teachers.length,i=0;
+        while (i<len){
+            tableContent+=`
+                            <tr>
+                            <td>` + (i+1) + `</td>
+                            <td><a href="` +teachers[i].value + `" >`+ teachers[i].name+`</a></td>
+                            <td>
+                            <a class="delete" href="javascript:teacher.delete('`+ teachers[i].value +`')">delete</a>
+                            <a class="green" href="javascript:teacher.getForm('`+ teachers[i].value +`')">update</a>
+                            </td>
+                            </tr>`;
+            i++;
+        }
+        table.innerHTML = tableContent  ;
+        result.appendChild(table);
+        }catch(e){
+            return render(result,e);
+      }
+  },
+  departmentSelected: async ()=>{
+    let select = document.getElementById('department'),
+        subjectSelect = document.getElementById('subject');
+    subjectSelect.options.length = 0;
+    let department = select.value;
+    let subjects=[];
+    try {
+        subjects = await ajax('GET','/subject?department='+department,'application/json',null);
+        subjects = JSON.parse(subjects);
+        let len = subjects.length;
+        while (len>0){
+            len--;
+            let option = document.createElement('option');
+            option.text = subjects[len].name;
+            option.value = subjects[len].value;
+            subjectSelect.add(option);
+        }
+    }catch (e) {
+        alert(e);
+    }
+},
+delete : async (_id)=>{
+    let data = "id="+id;
+    let result = await ajax('DELETE','/teacher','text/html',data);
+    alert(result);
+}
 };
 const student = {
     getForm : async ()=>{
@@ -255,6 +321,7 @@ function getPostData(form){
 function render(result,response) {
     result.innerHTML = '';
     result.innerHTML = response;
+return;
 }
 function appendSelectData(select) {
     let options = select.options,
