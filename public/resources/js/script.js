@@ -3,8 +3,10 @@ async function update(route){
     const form = document.querySelector('form');
     try {
         let data = await getPostData(form),
-            response = await ajax('PUT','/'+route,'application/json',data);
-            return window.location.href = '/'+route+'/'+form.elements['_id'].value;
+            response = await ajax('PUT','/'+route,'text/html',data);
+            if(response === '200')
+                return window.location.href = '/'+route+'/'+form.elements['_id'].value;
+            return document.write(response);
         }catch (e) {
             console.log(e);
         }
@@ -13,12 +15,25 @@ async function update(route){
 async function del(_id,route){
     try{
         let data = "_id="+_id;
-        let response = await ajax('DELETE','/'+route,'application/json',data);
-        if(response === '200')
+        let response = await ajax('DELETE','/'+route,'text/html',data); 
         return window.location.href = '/'+route;
     }catch(e){
         console.log(e);
     }
+}
+async function departmentSelected(route){
+    let select = document.getElementById('department');
+    let data = "department="+select.value;
+    let response = await ajax('GET','/'+route+'?'+data,'application/json');
+    response = JSON.parse(response);
+    let targetSelect = document.getElementById(route);
+    targetSelect.options.length = 0;
+        for(let i=0; i<response.length;i++){
+            let option = document.createElement('option');
+            option.value = response[i]._id;
+            option.text = response[i].name;
+            targetSelect.add(option);
+        }
 }
 
 
