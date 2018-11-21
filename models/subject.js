@@ -44,56 +44,53 @@ module.exports.createSubject = (newSubject)=>{
   });
 };
 module.exports.fetchSubjects = (query,options)=>{
-    /*
-    * query should be a standard mongoose query
-    * */
     return new Promise( async (resolve , reject)=>{
-        query = Subject.find(query);
-        let len = options && options.length,i=0;
-        while (i<len){
-            query.populate(options[i]);
-            i++;
-        }
         try {
-            let subjects = await query.exec();
-            resolve(subjects);
+            let fields = options && options['select'],
+                populate = options && options['populate'];
+            query = Subject.find(query);
+            fields?query.select(fields):'';
+            let len = populate && populate.length,i=0;
+            while (i<len){
+                    query.populate(populate[i]);
+                    i++;
+                }
+                let users = await query.exec();
+            return resolve(users);
         }catch (e) {
-            reject("Error finding subjects "+e);
+            return reject("Error finding subjects "+e);
         }
     })
 };
+
 module.exports.fetchSubjectById = (_id,options)=>{
     return new Promise( async (resolve , reject)=>{
         try {
-            let len = options && options.length,i=0,
-            query = Subject.findOne({'_id':_id});
+            let query = Subject.findById(_id),
+                fields = options && options['select'],
+                populate = options && options['populate'];
+            fields?query.select(fields):'';
+            let len = populate && populate.length,i=0;
             while (i<len){
-                query.populate(options[i]);
-                i++;
-            }
-            let subjects = await query.exec();
-            resolve(subjects);
+                    query.populate(populate[i]);
+                    i++;
+                }
+                let result = await query.exec();
+            return resolve(result);
         }catch (e) {
-            reject("Error finding subjects "+e);
+            return reject("Error finding subject "+e);
         }
     })
 };
-module.exports.delete = id=>{
-  return new Promise((resolve,reject)=>{
-      Subject.deleteOne({'_id':id},(err)=>{
-          if (!err){
-              // delete all the references of subjects
-                /*
-                * 1. Teacher
-                * 2. Class
-                * 3. Department
-                */
-               Subject.fetchSubject()
-              return resolve(true);
-          }
-          return reject("Error deleting Subject " + err)
-      })
-  })
+module.exports.delete = _id =>{
+    return new Promise( async (resolve, reject)=>{
+        try{
+            let query = Subject.findByIdAndDelete({'_id':_id});
+            return resolve(query.exec());
+        }catch(e){
+            return reject("Error deleting teacher "+e);
+        }
+    });
 };
 module.exports.update = async (_id, set)=>{
   return new Promise( async (resolve, reject)=>{

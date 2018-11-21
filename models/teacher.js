@@ -57,7 +57,9 @@ module.exports.fetchTeachers = (query,options)=>{
 module.exports.fetchTeacherById = (_id,options)=>{
     return new Promise( async (resolve , reject)=>{
         try {
-            let query = Teacher.findById(_id),fields = options && options['select'],populate = options && options['populate'];
+            let query = Teacher.findById(_id),
+                fields = options && options['select'],
+                populate = options && options['populate'];
             fields?query.select(fields):'';
             let len = populate && populate.length,i=0;
             while (i<len){
