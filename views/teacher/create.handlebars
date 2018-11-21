@@ -1,0 +1,97 @@
+    <div class="form-container">
+        {{!-- Form script for select elements --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', ()=>{
+                let departmentSelect = document.getElementById('department'),
+                    subjectSelect = document.getElementById('subject'),
+                    designationSelect = document.getElementById('designation'),
+                    d_id = '{{teacher.department}}',
+                    sub_id = '{{teacher.subject}}',
+                    desgn_id = '{{teacher.designation}}';
+                    for(let i=0;i<departmentSelect.length;i++){
+                        if(departmentSelect.item(i).value === d_id){
+                            departmentSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                    for(let i=0;i<designationSelect.length;i++){
+                        if(designationSelect.item(i).value === desgn_id){
+                            designationSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                    {{!-- has to be modified for multiple select --}}
+                    for(let i=0;i<subjectSelect.length;i++){
+                        if(subjectSelect.item(i).value === sub_id){
+                            subjectSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+            });
+        </script>
+        <form {{#if update}} action="javascript:update('teacher')" {{else}} method="POST" action="/teacher" {{/if}}>
+            <h3>{{#if teacher}}Update{{else}}create{{/if}} Teacher</h3>
+            {{#if errors}}
+                {{#each errors}}
+                    <div class="msg err ">
+                        {{#with this}}
+                            {{msg}}
+                        {{/with}}
+                    </div>
+                {{/each}}
+            {{/if}}
+            <div class="input-field">
+                <label for="name">Name :</label>
+                <input type="text" name="name" id="name" required {{#if teacher}} value="{{teacher.name}}" {{else if data}} value="{{data.name}}" {{/if}}>
+            </div>
+            <div class="input-field">
+                <label for="email">Email : </label>
+                <input type="email" name="email" id="email" {{# if teacher}}value="{{teacher.email}}"{{/if}}>
+            </div>
+            <div class="input-field">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" {{# if teacher}}value="{{teacher.username}}"{{/if}}>
+            </div>
+            <div class="input-field">
+                <label for="department">Department</label>
+                <select name="department" required id="department" onchange="departmentSelected('subject')">
+                    <option value="">-</option>
+                    {{#each departments}}
+                        {{#ifCond value ../data.department}}
+                            <option value="{{_id}}" selected>{{name}}</option>
+                    {{else}}
+                        <option value="{{_id}}">{{name}}</option>
+                        {{/ifCond}}
+                    {{/each}}
+                </select>
+            </div>
+            <div class="input-field">
+                <label for="subject">Subject : </label>
+                <select name="subject" required id="subject">
+                    {{#each subjects}}
+                        {{#ifCond value ../data.subject}}
+                            <option value="{{_id}}" selected>{{name}}</option>
+                    {{else}}
+                        <option value="{{_id}}">{{name}}</option>
+                        {{/ifCond}}
+                    {{/each}}
+                </select>
+            </div>
+            <div class="input-field">
+                <label for="designation">Designation : </label>
+                <select name="designation" required id="designation">
+                    {{#each designations}}
+                        {{#ifCond value ../data.designation}}
+                            <option value="{{_id}}" selected>{{name}}</option>
+                    {{else}}
+                        <option value="{{_id}}">{{name}}</option>
+                        {{/ifCond}}
+                    {{/each}}
+                </select>
+            </div>
+            <input type="hidden" name="_id" value={{teacher._id}}>
+            <div class="input-field">
+                <button type="submit" class="btn btn-submit" name="teacher-submit">Submit</button>
+            </div>
+            </form>
+        </div>
