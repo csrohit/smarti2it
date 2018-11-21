@@ -43,21 +43,40 @@ module.exports.createDepartment = newDepartment=>{
   })
 };
 module.exports.fetchDepartments = (query,options)=>{
-    /*
-    * query should be a standard mongoose query
-    * */
     return new Promise( async (resolve , reject)=>{
-        query = Department.find(query);
-        let len = options && options.length,i=0;
-        while (i<len){
-            query.populate(options[i]);
-            i++;
-        }
         try {
-            let result = await query.exec();
-            return resolve(result);
+            let fields = options && options['select'],
+                populate = options && options['populate'];
+            query = Department.find(query);
+            fields?query.select(fields):'';
+            let len = populate && populate.length,i=0;
+            while (i<len){
+                    query.populate(populate[i]);
+                    i++;
+                }
+                let users = await query.exec();
+            return resolve(users);
         }catch (e) {
-            return reject("Error finding departments "+e);
+            return reject("Error finding users "+e);
+        }
+    })
+};
+module.exports.fetchDepartmentById = (_id,options)=>{
+    return new Promise( async (resolve , reject)=>{
+        try {
+            let query = Department.findById(_id),
+            fields = options && options['select'],
+            populate = options && options['populate'];
+            fields?query.select(fields):'';
+            let len = populate && populate.length,i=0;
+            while (i<len){
+                    query.populate(populate[i]);
+                    i++;
+                }
+                let users = await query.exec();
+            return resolve(users);
+        }catch (e) {
+            return reject("Error finding department "+e);
         }
     })
 };

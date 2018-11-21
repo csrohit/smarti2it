@@ -1,18 +1,24 @@
-` <div class="form-container">
-        <form action="javascript:teacher.create()">
-            <h3>Create teacher</h3>
-            <div class="input-field">
-                <label for="name">Name :</label>
-                <input type="text" name="name" id="name" {{# if teacher}}value="{{teacher.name}}"{{/if}}>
-            </div>
-            <div class="input-field">
-                <label for="email">Email : </label>
-                <input type="email" name="email" id="email" {{# if teacher}}value="{{teacher.email}}"{{/if}}>
-            </div>
-            <div class="input-field">
-                    <label for="username">Username</label>
-                    <input type="text" name="username" id="username" {{# if teacher}}value="{{teacher.name}}"{{/if}}>
-            </div>
+<div class="form-container">
+        <form {{#if teacher}}action="javascript:teacher.update()" {{ else }}action="javascript:teacher.create()"{{/if}}>
+        <h3>{{#if teacher}}
+                update
+            {{ else }}
+                Create
+            {{/if}}
+             teacher</h3>
+             <input type="hidden" name="_id" value={{user._id}}>
+        <div class="input-field">
+            <label for="name">Name :</label>
+            <input type="text" name="name" id="name" {{# if teacher}}value="{{teacher.name}}"{{/if}}>
+        </div>
+        <div class="input-field">
+            <label for="email">Email : </label>
+            <input type="email" name="email" id="email" {{# if teacher}}value="{{teacher.email}}"{{/if}}>
+        </div>
+        <div class="input-field">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" {{# if user}}value="{{user.username}}"{{/if}}>
+        </div>
         <div class="input-field">
             <label for="department">Department:</label><br>
             <select onchange="javascript:teacher.departmentSelected()" name="department" id="department">
@@ -25,6 +31,7 @@
             <div class="input-field">
                 <label for="subject">Subject : </label>
                 <select name="subject" id="subject">
+                <option selected value=""> - </option>
                     {{#each subjects}}
                         <option value="{{value}}">{{name}}</option>
                     {{/each}}
@@ -34,6 +41,7 @@
             <div class="input-field">
                 <label for="designation">Designation : </label>
                 <select name="designation" id="designation">
+                <option selected value=""> - </option>
                     {{#each designations}}
                         <option value="{{value}}">{{name}}</option>
                     {{/each}}

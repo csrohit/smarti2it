@@ -1,59 +1,58 @@
 const express = require('express'),
     router = express.Router(),
+    ObjectId = require('mongoose').Types.ObjectId,
     Designation = require('../../models/designation'),
     Subject = require('../../models/subject'),
     Department = require('../../models/department'),
     Teacher= require('../../models/teacher'),
     Function = require('../../functions');
 
+const INTERNAL_SERVER_ERROR = 500, NOT_IMPLEMENTED = 501;
 router.get('/',async (req,res)=>{
-   if (req.headers.accept === 'application/json'){
-       /*
-       * Send the object array parsed for table  display
-       * */
-        let query = req.query.department;
-        let subjects=null;
-        if(query)
-            subjects = await Subject.fetchSubjects({'department':query});            
-        else
-        subjects = await Subject.fetchSubjects();            
-       console.log(subjects);
-       subjects = Function.parseForSelect(subjects);
-       return res.send(subjects);
-   }else if (req.headers.accept === 'text/html'){
-           /*
-           * send subject create view form
-           * */
-            try {
-                let departments = await Department.fetchDepartments();
-                departments = Function.parseForSelect(departments);
-                return res.render('ajax/subject',{layout:null,departments:departments});
-            }catch (e) {
-                console.log(e);
-                return res.send("Server error occurred");
-            }
-   }
+    let subjects = await Subject.fetchSubjects();
+    subjects = Function.parseForSelect(subjects);
+    return res.render('subject/list',{'subjects':subjects});
+});
+router.get('/:_id', async (req,res)=>{
+    try{
+        let _id = req.params._id;
+        if(!_id)
+            return res.json([{'location':'params','msg':'ObjectId required'}]);
+        if(!ObjectId.isValid(_id))
+            return res.json([{'location':'params','msg':'Invalid ObjectId'}]);
+        let subject = await Subject.fetchSubjectById(_id,['teacher','department']);
+        console.log(subject);
+        return res.render('subject/profile',{'subject':subject});
+    }catch(e){
 
-    console.log("Unknown header for subject get handlers/subject.js");
-    return res.send('Unhandled request');
+    }
+
+
+/*     try{
+        let subject = await Subject.fetchSubject({'_id':req.params._id},['department']);
+        return res.json(subject);
+    }catch(e){
+        console.log(e);
+        return res.sendStatus(INTERNAL_SERVER_ERROR);
+    } */
+
 });
-router.get('/:id', async (req,res)=>{
-   let id = req.params.id;
-   console.log(req.headers.accept);
-   if (req.headers.accept === 'application/json'){
-       /*
-       * Send subject data as json
-       * */
-       return res.send("Subject data in json for "+id);
-   } else if (req.headers.accept === 'text/html'){
-       /*
-       * Send subject data as text/html for rendering
-       * */
-       return res.send("Subject profile view for "+id);
-   }
-   console.log("Unknown header for subject id request handlers/subject.js");
-   return res.send('Unhandled request');
+router.get('/update', async (req, res)=>{
+    return res.send("Update");
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
 router.delete('/', async (req,res)=>{
     /*
     * Get the id of the subject to be deleted from the form body and delete the subject
@@ -67,35 +66,32 @@ router.delete('/', async (req,res)=>{
         return res.send(false);                     // if failed to delete the subject
     }
 });
-router.put('/',async (req,res)=>{
-    try {
-        if (req.headers.accept === 'application/json'){
-            /*
-            * process the update request here
-            * */
-                let data = req.body,
-                    id = req.body._id,
-                    name = data.name,
-                    result = await Subject.update({'_id':id,'name':name});
-                return res.send(result);
+router.put('/', async (req, res)=>{
+    try{
+        if(req.header('accept')=='application/json'){
+            let _id = req.body._id,
+            subject = await Subject.fetchSubjectById(_id),
+            department = req.body.department,
+            university_code = req.body.university_code,
+            teacher = req.body.teacher,
+            name = req.body.name;
+            let set = new Object();
+            {(subject.name === name)?'':set['name']=name;}
+            {(subject.teacher === teacher)?'':set['teacher']=teacher;}
+            {(subject.department === department)?'':set['department']=department;}
+            {(subject.university_code === university_code)?'':set['university_code']=university_code;}
+            subject = await Subject.update(subject._id,set);
+            return res.sendStatus(200);
         }
-        else if (req.headers.accept === 'text/html'){
-            /*
-            * Send update form
-            *
-            * */
-                let id = req.body._id,
-                    subject = await Subject.fetchSubject({_id:id}),
-                    departments = await Department.fetchDepartments();
-                departments = Function.parseForSelect(departments);
-            return res.render('ajax/subject',{layout:null,subject:subject,departments:departments});
-        }
-    }catch (e) {
+        let _id = req.body._id;
+        let subject = await Subject.fetchSubjectById({'_id':_id}),
+            departments = await Department.fetchDepartments();
+            departments = Function.parseForSelect(departments);
+        return res.render('ajax/subject',{layout:null,'subject':subject,'departments':departments});
+    }catch(e){
         console.log(e);
-        return res.send("Server error occurred");
+        return res.sendStatus(INTERNAL_SERVER_ERROR);
     }
-    console.log("Unknown header for update handlers/subject.js");
-    return res.send('Unhandled request');
 });
 router.post('/',(req,res)=>{
     let subject = new  Subject({

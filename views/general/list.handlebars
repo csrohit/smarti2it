@@ -1,0 +1,22 @@
+
+<h2>{{h2}}</h2>
+ <div class="container">
+<!--   Search bar     -->
+    <div class="row">
+        <div class="col span-5-of-6 search-bar">
+            <input type="search" name="" placeholder="search" id="">
+        </div>
+        <div class="col span-1-of-6 search-bar">
+            <a href="javascript:alert('Add new Subject')"><button class="btn btn-green"><b><i class="icon ion-md-add"></i></b></button></a>
+        </div>
+    </div>
+    
+<!--    Card view of subjects     -->
+{{#each subjects}}
+    <div class="row card">
+        {{#with this}}
+            <a href="/subject/{{value}}">{{name}}</a>
+        {{/with}}     
+    </div>
+{{/each}}
+ </div>

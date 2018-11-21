@@ -1,0 +1,44 @@
+{{#with subject}}
+
+<div class="container">
+    <div class="row">
+        <div class="col span-4-of-6 search-bar">
+            <h2>{{name}}</h2>
+        </div>
+        <div class="col span-1-of-6 search-bar">
+            <a href="javascript:alert('Add new Subject')"><button class="btn btn-green">update</button></a>
+        </div>
+        <div class="col span-1-of-6 search-bar">
+            <a href="javascript:alert('Add new Subject')"><button class="btn btn-red"><i class="icon ion-md-trash"></i></button></a>
+        </div>
+    </div>
+     <div class="field row">
+             <span class="col span-1-of-3">Teacher head : </span>
+             <span class="col span-2-of-3">{{teacher.name}}</span>
+     </div>
+     <div class="field row">
+             <span class="col span-1-of-3">SPPU code : </span>
+             <span class="col span-2-of-3">{{university_code}}</span>
+     </div>
+     <div class="field row">
+             <span class="col span-1-of-3">Department : </span>
+             <span class="col span-2-of-3">{{department.name}}</span>
+     </div>
+     <div class="field row">
+             <span class="col span-1-of-3">Clsss : </span>
+             <span class="col span-2-of-3">{{classs.name}}</span>
+     </div>
+     <div class="field row">
+             <span class="col span-1-of-3">Course objectives : </span>
+             <span class="col span-2-of-3">{{course_objectives}}</span>
+     </div>
+     <div class="field row">
+             <span class="col span-1-of-3">Course outcomes : </span>
+             <span class="col span-2-of-3">{{course_outcomes}}</span>
+     </div>
+ </div>
+ <div id="course-timeline">
+     Course timeline will appear here along with links of uploaded files
+ </div>
+
+{{/with}}

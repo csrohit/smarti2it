@@ -10,92 +10,149 @@ const express = require('express'),
 const INTERNAL_SERVER_ERROR = 500, NOT_IMPLEMENTED = 501;
 
 router.get('/', async (req,res)=>{
-    switch(req.header('accept')){
-     case 'application/json' :
-
-
-        try{
-            let teachers = await Teacher.fetchTeachers();
-            teachers = Function.parseForSelect(teachers);
-            let users = await User.fetchUsers();
-            console.log(users);
-        return res.json(teachers);
-        }catch(e){
-            console.log(e);
-        return res.sendStatus(INTERNAL_SERVER_ERROR);            
-        }
-        break;
-     case 'text/html' :
-       return res.render('ajax/teacher',{'teacher':'data'});
-       break;
+    try{
+       let teachers = await User.fetchUsers({'rank':'teacher'},{select:'name'});
+       return res.render('teacher/list',{'teachers':teachers})
+    }catch(e){
+        res.send(e);
     }
-    console.log("Unhandled request header at handlers/teacher.js");
-    return res.sendStatus(NOT_IMPLEMENTED);
-
 });
-router.get('/:id', async (req,res)=>{
-    if(req.header('accept') == 'application/json'){
-        /*
-        * send teacher data in json format 
-        */
-       try{
-            let teacher = await Teacher.fetchTeachers({'_id': req.params.id});
-        return res.json(teacher);
-        }catch(e){
-            console.log(e)
-            return res.status(INTERNAL_SERVER_ERROR).json({'res':'err'});
-        }
-    }else if(req.header('accept') == 'text/html'){
-            /* 
-            *   send teacher data in txt for rendering
-            **/
-    return res.send("html data for id :"+id);
+router.get('/update/:_id', async (req, res)=>{
+    try{
+        let _id = req.params._id;
+        if(!_id)
+            return res.json([{'location':'params','msg':'ObjectId required'}]);
+        if(!ObjectId.isValid(_id))
+            return res.json([{'location':'params','msg':'Invalid ObjectId'}]);
+        
+            let user = await User.fetchUserById(_id,{'populate':[{'path':'designation','select':'name'}],'select':'-password -rank'});
+            let teacher = await Teacher.fetchTeacherById(user.profile,[{'path':'department','select':'name'},{'path':'subject','select':'name'}]);
+            teacher = teacher.toObject();
+            delete student._id;
+        let departments = await Department.fetchDepartments(),
+            designations = await Designation.fetchDesignations();
+            departments = Function.parseForSelect(departments);
+            designations = Function.parseForSelect(designations);
+    return res.render('student/create',{'student':{...user.toObject(),...teacher},"update":true,'designations':designations,'departments':departments});
+    }catch(e){
+        console.log(e);
+        return res.json({'errors':[{'location':'params','msg':'Can not fetch user   '}]});
     }
 });
 
+
+
+
+
+
+
+router.get('/:_id', async (req,res)=>{
+    try{
+        let _id = req.params._id;
+        if(!_id)
+            return res.json([{'location':'params','msg':'ObjectId required'}]);
+        if(!ObjectId.isValid(_id))
+            return res.json([{'location':'params','msg':'Invalid ObjectId'}]);
+            let user = await User.fetchUserById(_id,{'populate':[{'path':'designation','select':'name'}],'select':'-password -rank'});
+            let teacher = await Teacher.fetchTeacherById(user.profile,{populate:[{'path':'subject','select':'name'},{'path':'department','select':'name'}]});
+            console.log(user);
+            console.log(teacher);
+        return res.render('teacher/profile',{'teacher':{...user.toObject(),...teacher.toObject()}});
+    }catch(e){
+        return res.send(e);
+    }
+});
+router.get('/update', async (req, res)=>{
+    return res.send("Update");
+});
 router.post('/', async (req,res)=>{
-    console.log(req.headers.accept);
-    if(req.header('accept') == 'application/json'){
-        /*
-        *   save the teacher in the database
-        *  */
-        return res.send("save teacher");
-    }else if(req.header('accept') == 'text/html'){
-        /* 
-        *   render the create teacher form
-        *  */
-        return res.send("create teacher form");
+    try{
+        let teacher = new Teacher({
+            'name':req.body.name,
+            'department':req.body.department,
+            'email':req.body.email,
+            'subject':req.body.subject,
+            'class':req.body.class
+        });
+        teacher = await Teacher.createTeacher(teacher);
+        let user = new User({
+            'username':req.body.username,
+            'designation':req.body.designation,
+            'rank':'teacher',
+            'password':'1234',
+            'name':req.body.name,
+            'profile':teacher._id
+        });
+        user = await User.createUser(user);
+        return res.json(user);
+    }catch(e){
+        console.log(e);
+        return res.sendStatus(INTERNAL_SERVER_ERROR);
     }
-    console.log("Unhandled request header at handlers/teacher.js");
-    return res.send("Sever header occurred");
 });
 router.put('/', async (req,res)=>{
-    let _id = req.body._id;
-    let teacher = await Teacher.fetchTeachers({'_id':_id},['subject','department']);
-    let departments = await Department.fetchDepartments();
-    departments = Function.parseForSelect(departments);
-    let designations = await Designation.fetchDesignations();
-    designations = Function.parseForSelect(designations);
-    return res.render('ajax/teacher',{'teacher':teacher[0],'departments':departments,'designations':designations});
+    try{
+        if(req.header('accept') === 'application/json'){
+            let _id = req.body._id;
+            let user = await User.fetchUserById(_id),
+            teacher = await Teacher.fetchTeacherById(user.profile);
+            let set = new Object();
+
+            let name = req.body.name,
+            designation = req.body.designation,
+            username = req.body.username,
+            department = req.body.department,
+            email = req.body.email,
+            subject = req.body.subject;
+
+            {(user.name == name)?'':set['name'] = name;}
+            {(user.designation == designation)?'':set['designation'] = designation;}
+            {(user.username == username)?'':set['username'] = username;}                    
+            user = await User.update(_id,set);                    
+            set={};
+            {(teacher.name == name)?'':set['name'] = name;}
+            {(teacher.department == department)?'':set['department'] = department;}
+            {(teacher.subject == subject)?'':set['subject'] = subject;}
+            {(teacher.email == email)?'':set['email'] = email;}
+            teacher = await Teacher.update(teacher._id,set);
+        return res.json(user);
+        }         
+        let _id = req.body._id;
+        let user = await User.fetchUserById({_id});
+        let teacher = await Teacher.fetchTeacherById(user.profile,['subject','department']);
+        let departments = await Department.fetchDepartments();
+        let designations = await Designation.fetchDesignations();
+        departments = Function.parseForSelect(departments);
+        designations = Function.parseForSelect(designations);
+        return res.render('ajax/teacher',{layout:null, 'teacher':teacher,'user':user,'departments':departments,'designations':designations});
+    }catch(e){
+        console.log(e);
+        return res.sendStatus(INTERNAL_SERVER_ERROR);
+    }
 });
 router.delete('/', async (req,res)=>{
     if(req.header('accept') == 'application/json'){
-        /* 
-        *   delete the teacher
-        *  */
-        return res.send("delete teacher server");
+        try{
+            let user = await User.fetchUserById(req.body._id);
+            let teacher = await Teacher.fetchTeacherById(user.profile);
+            let result = await User.delete(user._id) & await Teacher.delete(teacher._id);
+            return res.json(result);
+        }catch(e){
+            console.log(e);
+            return res.sendStatus(INTERNAL_SERVER_ERROR);
+        }
     }else if(req.header('accept') == 'text/html'){
         return res.send("text/html");
     }
     console.log("Unhandled request header at handlers/teacher.js");
-    return res.send("Sever header occurred");
+    return res.sendStatus(INTERNAL_SERVER_ERROR);
 });
-
 router.patch('/', async (req,res)=>{
-    /* 
-    *   Testing route
-    *  */
-    res.download('./public/Express 4.x - API Reference.pdf');
+    let departments= await Department.fetchDepartments({},{select:'name'});
+    return res.send(departments);
 });
 
+function _throw(e){
+    throw Function.pushError(e);
+}
 module.exports = router;

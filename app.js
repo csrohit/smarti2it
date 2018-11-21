@@ -7,6 +7,7 @@ const express = require('express'),
         result = require('dotenv').config(),
         Handlebars = require('handlebars'),
         flash = require('connect-flash'),
+        validator = require('express-validator'),
         app = express(),
         routes = require('./routes/index'),
         users = require('./routes/users'),
@@ -17,7 +18,9 @@ const express = require('express'),
         teacher = require('./routes/handlers/teacher'),
         subject = require('./routes/handlers/subject'),
         department = require('./routes/handlers/department'),
+        designation = require('./routes/handlers/designation'),
         student = require('./routes/handlers/student');
+
 
 // LOAD ENV FILE
 if (result.error) {
@@ -35,6 +38,7 @@ db.on('error', function (error) {
     console.log(error);
 });
 
+
 // connect flash
 app.use(flash());
 // view engine
@@ -44,6 +48,8 @@ app.set('view engine','handlebars');
 //body parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
+app.use(validator());
+app.use(express.json());
 
 //Express session
 app.use(session({
@@ -53,7 +59,6 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-
 //Routing
 app.use('/',(req,res,next)=> {
     res.locals.success_msg = req.flash('success_msg');
@@ -74,6 +79,7 @@ app.use('/department',department);
 app.use('/subject',subject);
 app.use('/ajax',ajax);
 app.use('/admin',admin);
+app.use('/designation',designation);
 app.use('/node',node);
 app.use(function(req, res){
     res.type('text/plain');

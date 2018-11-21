@@ -10,7 +10,7 @@ const subjectSchema = new Schema({
        type:String,
        required:true
    },
-   head_teacher:{
+   teacher:{
        type: Schema.Types.ObjectId,
        ref:'Teacher'
    },
@@ -25,6 +25,12 @@ const subjectSchema = new Schema({
     university_code:{
        type:Number
         // required: true
+    },
+    course_objectives:{
+        type:String
+    },
+    course_outcomes:{
+        type:String
     }
 });
 
@@ -56,6 +62,22 @@ module.exports.fetchSubjects = (query,options)=>{
         }
     })
 };
+module.exports.fetchSubjectById = (_id,options)=>{
+    return new Promise( async (resolve , reject)=>{
+        try {
+            let len = options && options.length,i=0,
+            query = Subject.findOne({'_id':_id});
+            while (i<len){
+                query.populate(options[i]);
+                i++;
+            }
+            let subjects = await query.exec();
+            resolve(subjects);
+        }catch (e) {
+            reject("Error finding subjects "+e);
+        }
+    })
+};
 module.exports.delete = id=>{
   return new Promise((resolve,reject)=>{
       Subject.deleteOne({'_id':id},(err)=>{
@@ -73,51 +95,13 @@ module.exports.delete = id=>{
       })
   })
 };
-module.exports.fetchSubject = (query,options)=>{
-    /*
-    * return s a single subject, query must be a standard query eg. {"_id":"5babd111ce1b43095b413d04"}
-    * */
-    return new Promise( async (resolve , reject)=>{
-        if (!ObjectId.isValid(query._id)){
-            return reject('Invalid ObjectId');
-        }
-        query = Subject.findOne(query);
-        let len = options && options.length,i=0;
-        while (i<len){
-            query.populate(options[i]);
-            i++;
-        }
-        try {
-            let subject = await query.exec();
-            return resolve(subject);
-        }catch (e) {
-            return reject("Error finding subject "+e);
-        }
-    })
-};
-module.exports.update = async newSubject=>{
-  /*
-  * requires a valid subject object
-  * */
-  return new Promise((resolve,reject)=>{
+module.exports.update = async (_id, set)=>{
+  return new Promise( async (resolve, reject)=>{
      try {
-         let subject = Subject.fetchSubject({'_id':newSubject._id});
-         let data = {
-           name:newSubject.name,
-           head_teacher:newSubject.head_teacher,
-           department: newSubject.department,
-           class: newSubject.class
-         };
-         console.log(newSubject);
-         console.log(newSubject._id);
-         Subject.updateOne({'_id':newSubject._id},data,(err,subject)=>{
-             if (err) return reject("Error updating subject "+err);
-             else return resolve(subject);
-         });
+         let query = Subject.updateOne({'_id':_id},{$set:set});
+         return resolve(await query.exec());
      } catch (e) {
          return reject("Error finding subject for update "+e);
      }
   });
-
-
 };

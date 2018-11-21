@@ -1,4 +1,7 @@
 const mongoose = require('mongoose'),
+    ObjectId = require('mongoose').Types.ObjectId,
+    err = require('../err'),
+    Function = require('../functions'),
     Schema = mongoose.Schema;
 
 const studentSchema = new Schema({
@@ -18,9 +21,9 @@ const studentSchema = new Schema({
        type:Schema.Types.ObjectId,
         ref:'Department'
     },
-    class:{
+    classs:{
        type:Schema.Types.ObjectId,
-        ref:'Class'
+        ref:'Classs'
     }
 });
 
@@ -28,11 +31,11 @@ const Student = module.exports = mongoose.model('Student',studentSchema);
 module.exports.createStudent = newStudent=>{
     return new Promise((resolve,reject)=>{
         newStudent.save((err,newStudent)=>{
-            if (!err)resolve(newStudent);
-            else reject("Error creating student "+err);
+            if (!err)return resolve(newStudent);
+            else return reject("Error creating student "+err);
         })
     })
-};
+}
 module.exports.fetchStudents = ()=>{
   return new Promise((resolve,reject)=>{
       Student.find({},(err,students)=>{
@@ -40,47 +43,53 @@ module.exports.fetchStudents = ()=>{
           else reject("Error finding students");
       })
   })
-};
-module.exports.fetchStudent = (query,options)=>{
-  return new Promise( async (resolve , reject)=>{
-       query = Student.findOne(query);
-       let len = options && options.length,i=0;
-       while (i<len){
-           query.populate(options[i]);
-           i++;
-       }
-      try {
-          let student = await query.exec();
-          resolve(student);
-      }catch (e) {
-          reject("Error finding student "+e);
-      }
-  })
-};
-module.exports.update = async newStudent=>{
-    /*
-    * requires a valid subject object
-    * */
-    return new Promise((resolve,reject)=>{
+}
+module.exports.fetchStudentById = (_id,options)=>{
+    return new Promise( async (resolve , reject)=>{
         try {
-            let subject = Subject.fetchSubject({'_id':newStudent._id});
-            let data = {
-                name:newStudent.name,
-                roll_no:newStudent.roll_no,
-                email:newStudent.email,
-                department: newStudent.department,
-                class: newStudent.class
-            };
-            console.log(newStudent);
-            console.log(newStudent._id);
-            Subject.updateOne({'_id':newStudent._id},data,(err,subject)=>{
-                if (err) return reject("Error updating student "+err);
-                else return resolve(subject);
-            });
-        } catch (e) {
-            return reject("Error finding student for update "+e);
+            let query = Student.findById(_id),fields = options && options['select'],populate = options && options['populate'];
+            fields?query.select(fields):'';
+            let len = populate && populate.length,i=0;
+            while (i<len){
+                    query.populate(populate[i]);
+                    i++;
+                }
+                let result = await query.exec();
+            return resolve(result);
+        }catch (e) {
+            return reject("Error finding student "+e);
+        }
+    })
+};
+module.exports.update = (_id, set)=>{
+    return new Promise(async (resolve, reject)=>{
+        try{
+            {ObjectId.isValid(_id)?'':_throw(err.INVALID_ID);}
+            let query = await Student.updateOne({'_id':_id},{$set:set});
+            query = JSON.parse(JSON.stringify(query));
+            // {query.ok?'':_throw(err.STUDENT_UNCHANGED);}
+            return resolve(query);
+        }catch(e){
+            e.msg?'':e=Function.pushError(err.STUDENT_DOES_NOT_EXIST);
+            return reject(e);
         }
     });
-
-
+}
+module.exports.delete = _id =>{
+    return new Promise( async (resolve, reject)=>{
+        try{
+            {ObjectId.isValid(_id)?'':_throw(err.INVALID_ID);}
+            let query = Student.findByIdAndDelete({'_id':_id});
+            query = await query.exec();
+            {query?'':_throw(err.STUDENT_DOES_NOT_EXIST);}
+            return resolve(query);
+        }catch(e){
+            e.msg?'':e=Function.pushError(err.STUDENT_DOES_NOT_EXIST);
+            return reject(e);
+        }
+    });
 };
+
+function _throw(e){
+    throw Function.pushError(e);
+}

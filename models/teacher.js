@@ -7,8 +7,8 @@ const teacherSchema = new Schema({
         required:true
     },
     email:{
-        type:String,
-        required: true
+        type:String//,
+        // required: true
     },
     department:{
         type:Schema.Types.ObjectId,
@@ -34,55 +34,62 @@ module.exports.createTeacher = newTeacher=>{
         })
     })
 };
+
 module.exports.fetchTeachers = (query,options)=>{
-    /* 
-    *   query sould be a standard mongoose query
-    *  */
     return new Promise( async (resolve , reject)=>{
-        query = Teacher.find(query);
-        let len = options && options.length,i=0;
-        while (i<len){
-            query.populate(options[i]);
-            i++;
-        }
         try {
-            let teacher = await query.exec();
-            resolve(teacher);
+            let fields = options && options['select'],
+                populate = options && options['populate'];
+            query = Teacher.find(query);
+            fields?query.select(fields):'';
+            let len = populate && populate.length,i=0;
+            while (i<len){
+                    query.populate(populate[i]);
+                    i++;
+                }
+                let users = await query.exec();
+            return resolve(users);
         }catch (e) {
-            reject("Error finding teacher "+e);
+            return reject("Error finding teachers "+e);
         }
     })
 };
-
-module.exports.fetchTeacher = (query,options)=>{
-    /*
-    * return s a single subject, query must be a standard query eg. {"_id":"5babd111ce1b43095b413d04"}
-    * */
+module.exports.fetchTeacherById = (_id,options)=>{
     return new Promise( async (resolve , reject)=>{
-        query = Teacher.findOne(query);
-        let len = options && options.length,i=0;
-        while (i<len){
-            query.populate(options[i]);
-            i++;
-        }
         try {
-            let teacher = await query.exec();
-            return resolve(teacher);
+            let query = Teacher.findById(_id),fields = options && options['select'],populate = options && options['populate'];
+            fields?query.select(fields):'';
+            let len = populate && populate.length,i=0;
+            while (i<len){
+                    query.populate(populate[i]);
+                    i++;
+                }
+                let result = await query.exec();
+            return resolve(result);
         }catch (e) {
             return reject("Error finding teacher "+e);
         }
     })
 };
-
-module.exports.update = ()=>{
+module.exports.update = (_id, set)=>{
     return new Promise( async (resolve,reject)=>{
         try{
-            let teacher = await Teacher.fetchTeacher({'_id':newTeacher._id});
-            let data = {
-                
-            };
+            let query = Teacher.updateOne({'_id':_id},{$set:set});
+            query = await query.exec()
+            console.log(query);
+            return resolve(query);
         }catch(e){
             return reject("Error updating teacher "+e);
         };
+    });
+};
+module.exports.delete = _id =>{
+    return new Promise( async (resolve, reject)=>{
+        try{
+            let query = Teacher.findByIdAndDelete({'_id':_id});
+            return resolve(query.exec());
+        }catch(e){
+            return reject("Error deleting teacher "+e);
+        }
     });
 };

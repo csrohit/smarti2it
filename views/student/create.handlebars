@@ -1,0 +1,59 @@
+<div class="form-container">
+    <form {{#if update}} action="javascript:update('student')" {{else}} method="POST" action="/student" {{/if}}>
+        <h3>{{#if student}}Update{{else}}create{{/if}} Student</h3>
+        {{#if errors}}
+            {{#each errors}}
+                <div class="msg err ">
+                    {{#with this}}
+                        {{msg}}
+                    {{/with}}
+                </div>
+            {{/each}}
+        {{/if}}
+        <div class="input-field">
+            <label for="name">Name :</label>
+            <input type="text" name="name" id="name" required {{#if student}} value="{{student.name}}" {{else if data}} value="{{data.name}}" {{/if}}>
+        </div>
+        <div class="input-field">
+            <label for="emil">Email : </label>
+            <input type="email" name="email" id="email" required {{#if student}} value="{{student.email}}" {{else if data}} value="{{data.email}}" {{/if}}>
+        </div>
+        <div class="input-field">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" required {{#if student}} value="{{student.username}}" {{else if data}} value="{{data.username}}" {{/if}}>
+        </div>
+        <div class="input-field">
+            <label for="roll_no">Roll no. : </label>
+            <input type="number" name="roll_no" id="roll_no" required min="1" max="78" {{#if student}} value="{{student.roll_no}}" {{else if data}} value="{{data.roll_no}}" {{else}} value="55" {{/if}}>
+        </div>
+        {{!-- select tags are having problems with ifCOnd operator  value and student department are not equating --}}
+        <div class="input-field">
+            <label for="department">Department</label>
+            <select name="department" required id="department">
+                {{#each departments}}
+                    {{#ifCond value ../data.department}}
+                        <option value="{{_id}}" selected>{{name}}</option>
+                {{else}}
+                    <option value="{{_id}}">{{name}}</option>
+                    {{/ifCond}}
+                {{/each}}
+            </select>
+        </div>
+        <div class="input-field">
+            <label for="designation">Designation : </label>
+            <select name="designation" required id="designation">
+                {{#each designations}}
+                    {{#ifCond value ../data.designation}}
+                        <option value="{{_id}}" selected>{{name}}</option>
+                {{else}}
+                    <option value="{{_id}}">{{name}}</option>
+                    {{/ifCond}}
+                {{/each}}
+            </select>
+        </div>
+        <input type="hidden" name="_id" id="_id" {{#if student}} value="{{ student._id }}" {{/if}}>
+        <div class="input-field">
+            <button type="submit" class="btn btn-submit" name="student-submit">Submit</button>
+        </div>
+    </form>
+</div>
