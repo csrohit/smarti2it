@@ -66,7 +66,7 @@ router.get('/:_id', async (req,res)=>{
     }catch(e){
         return res.send(e);
     }
-}); 
+});
 router.put('/', async (req, res)=>{
     try{
         req.checkBody('name','Name field required').notEmpty().matches(/^([a-zA-Z]+\s?)?([a-zA-Z]+)$/g).withMessage('Invalid name');
@@ -77,10 +77,8 @@ router.put('/', async (req, res)=>{
         req.checkBody('designation','Designation field required').notEmpty().isMongoId().withMessage('Invalid designation Id');
         // req.checkBody('designation','Class field required').notEmpty().isMongoId().withMessage('Invalid class Id');
         const errors = req.validationErrors(true);        
-        let departments = await Department.fetchDepartments(),
-        designations = await Designation.fetchDesignations();
-        departments = Function.parseForSelect(departments);
-        designations = Function.parseForSelect(designations);
+        let departments = await Department.fetchDepartments({},{select:'name'}),
+        designations = await Designation.fetchDesignations({},{select:'name'});
         if(errors){
             return res.render('student/create',{'errors':errors,"update":true,'data':req.body,'designations':designations,'departments':departments});
         }
@@ -123,10 +121,8 @@ router.post('/', async (req, res)=>{
         // req.checkBody('designation','Class field required').notEmpty().isMongoId().withMessage('Invalid class Id');
         const errors = req.validationErrors(true);        
         if(errors){
-            let departments = await Department.fetchDepartments(),
-            designations = await Designation.fetchDesignations();
-            departments = Function.parseForSelect(departments);
-            designations = Function.parseForSelect(designations);
+            let departments = await Department.fetchDepartments({},{select:'name'}),
+                designations = await Designation.fetchDesignations({},{select:'name'});
             return res.render('student/create',{'errors':errors,'data':req.body,'designations':designations,'departments':departments});
         }
         // validation complete create user
