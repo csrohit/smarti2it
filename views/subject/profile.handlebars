@@ -6,10 +6,10 @@
             <h2>{{name}}</h2>
         </div>
         <div class="col span-1-of-6 search-bar">
-            <a href="javascript:alert('Add new Subject')"><button class="btn btn-green">update</button></a>
+            <a href="/subject/update/{{_id}}"><button class="btn btn-green">update</button></a>
         </div>
         <div class="col span-1-of-6 search-bar">
-            <a href="javascript:alert('Add new Subject')"><button class="btn btn-red"><i class="icon ion-md-trash"></i></button></a>
+            <a href="javascript:del('{{_id}}','subject')"><button class="btn btn-red"><i class="icon ion-md-trash"></i></button></a>
         </div>
     </div>
      <div class="field row">

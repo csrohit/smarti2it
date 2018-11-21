@@ -1,27 +1,67 @@
 <div class="form-container">
-    <form method="post" {{#if subject}}action="javascript:subject.update()" {{ else }}action="javascript:subject.create()"{{/if}}>
+            {{!-- Form script for select elements --}}
+    {{#if subject}}
+    <script>
+        document.addEventListener('DOMContentLoaded', ()=>{
+            let departmentSelect = document.getElementById('department');
+                {{!-- subjectSelect = document.getElementById('subject'), --}}
+                {{!-- designationSelect = document.getElementById('designation'), --}}
+                d_id = '{{student.department}}';
+                {{!-- sub_id = '{{teacher.subject}}', --}}
+                {{!-- desgn_id = '{{teacher.designation}}'; --}}
+                for(let i=0;i<departmentSelect.length;i++){
+                    if(departmentSelect.item(i).value === d_id){
+                        departmentSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+                {{!-- has to be modified for multiple select --}}
+            {{!--for(let i=0;i<subjectSelect.length;i++){
+                    if(subjectSelect.item(i).value === sub_id){
+                        subjectSelect.selectedIndex = i;
+                        break;
+                    }
+                } --}}
+        });
+    </script>
+    {{/if}}
+    <form method="post" {{#if subject}}action="javascript:update('subject')" {{ else }}action="/subject/" method="POST"{{/if}}>
         <h3>{{#if subject}}Update{{ else }}Create{{/if}} subject</h3>
+        {{#if errors}}
+            {{#each errors}}
+                <div class="msg err ">
+                    {{#with this}}
+                        {{msg}}
+                    {{/with}}
+                </div>
+            {{/each}}
+        {{/if}}
         <div class="input-field">
             <label for="name">Name:</label>
-            <input type="text" name="name" id="name" required {{#if subject }}value="{{subject.name}}" {{/if}}>
+            <input type="text" name="name" id="name" {{#if subject }}value="{{subject.name}}" {{/if}}>
         </div>
 
         <div class="input-field">
-            <label for="department">Department:</label><br>
-            <select onchange="javascript:subject.departmentSelected()" name="department" id="department">
-                <option selected value=""> - </option>
+            <label for="department">Department</label>
+            <select name="department" onchange="departmentSelected('teacher')" required id="department">
                 {{#each departments}}
-                <option value="{{_id}}">{{name}}</option>
+                    {{#ifCond value ../data.department}}
+                        <option value="{{_id}}" selected>{{name}}</option>
+                {{else}}
+                    <option value="{{_id}}">{{name}}</option>
+                    {{/ifCond}}
                 {{/each}}
             </select>
         </div>
-        <input type="hidden" name="_id" value={{subject._id}}>
         <div class="input-field">
-            <label for="teacher">Teacher</label>
-            <select name="teacher" id="teacher">
-                <option value=""> - </option>
+            <label for="teacher">Teacher : </label>
+            <select name="teacher" required id="teacher">
                 {{#each teachers}}
-                <option value="{{value}}">{{name}}</option>
+                    {{#ifCond _id ../data.teacher}}
+                        <option value="{{_id}}" selected>{{name}}</option>
+                {{else}}
+                    <option value="{{_id}}">{{name}}</option>
+                    {{/ifCond}}
                 {{/each}}
             </select>
         </div>
@@ -29,6 +69,7 @@
             <label for="university_code">University code</label>
             <input type="number" name="university_code" id="university_code" {{#if subject }}value="{{subject.university_code}}" {{/if}}>
         </div>
+            <input type="hidden" name="_id" value={{subject._id}}>
         <div class="input-field">
             <button type="submit" class="btn btn-submit" name="login-submit">Submit</button><br>
         </div>
