@@ -6,6 +6,7 @@
         {{>nav}}
            {{#if success_msg}}
             <div id="modal">
+                <script>window.addEventListener('click', (e)=>{if(e.target == document.getElementById('modal')) modal.style.display = 'none';});</script>
                 <div class="modal-content msg success_msg">
                     <p>{{ success_msg }}</p>
                 </div>
@@ -13,6 +14,7 @@
         {{/if}}
         {{#if error_msg}}
             <div id="modal">
+                <script>window.addEventListener('click', (e)=>{if(e.target == document.getElementById('modal')) modal.style.display = 'none';});</script>
                 <div class="modal-content msg error_msg">
                     <p>{{ error_msg }}</p>
                 </div>
@@ -21,7 +23,5 @@
                                 
         {{{ body }}}                
         {{>footer}}
-        {{#foo}}
-        {{/foo}}
     </body>
 </html>

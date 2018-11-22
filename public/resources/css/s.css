@@ -126,7 +126,46 @@ a{
     color: #008600;
     background-color: #cfffcf;    
 }
+/*    MODAL    */
 
+#modal {
+    display: block;
+    position: fixed;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.49);
+}
+
+.modal-content {
+    overflow: auto;
+    background-color: #f4f4f4;
+    box-shadow: 0 5px 8ppx 0 rgba(0, 0, 0, 0.2), 0 7px 20px 0 rgba(0, 0, 0, 0.17);
+}
+
+.msg {
+    display: inline-block;
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 5px;
+    padding: 1% 2%;
+}
+
+#modal .success_msg {
+    background: #c4ffc4;
+    border: 1px solid green;
+}
+
+#modal .error_msg {
+    background: #fff2f2;
+    border: 1px solid red;
+}
+    
 
 /*        LISTS          */
 ul{
