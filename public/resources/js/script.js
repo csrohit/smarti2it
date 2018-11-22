@@ -1,4 +1,6 @@
-
+document.getElementById('btn-cancel').addEventListener('click',e=>{
+    e.preventDefault();
+});
 async function update(route){
     const form = document.querySelector('form');
     try {
@@ -6,6 +8,8 @@ async function update(route){
             response = await ajax('PUT','/'+route,'text/html',data);
             if(response === '200')
                 return window.location.href = '/'+route+'/'+form.elements['_id'].value;
+            else if(response === '400')
+                return window.location.href = '/'+route;
             return document.write(response);
         }catch (e) {
             console.log(e);

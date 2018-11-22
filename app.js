@@ -1,25 +1,27 @@
 const express = require('express'),
-        mongoose = require('mongoose'),
-        passport = require('passport'),
-        exphbs = require('express-handlebars'),
-        session = require('express-session'),
-        bodyParser = require('body-parser'),
-        result = require('dotenv').config(),
-        Handlebars = require('handlebars'),
-        flash = require('connect-flash'),
-        validator = require('express-validator'),
-        app = express(),
-        routes = require('./routes/index'),
-        users = require('./routes/users'),
-        api = require('./routes/api/api'),
-        ajax = require('./routes/ajax'),
-        node = require('./routes/node');
-        admin = require('./routes/admin'),
-        teacher = require('./routes/handlers/teacher'),
-        subject = require('./routes/handlers/subject'),
-        department = require('./routes/handlers/department'),
-        designation = require('./routes/handlers/designation'),
-        student = require('./routes/handlers/student');
+    app = express(),
+    mongoose = require('mongoose'),
+    passport = require('passport'),
+    exphbs = require('express-handlebars'),
+    session = require('express-session'),
+    bodyParser = require('body-parser'),
+    result = require('dotenv').config(),
+    Handlebars = require('handlebars'),
+    flash = require('connect-flash'),
+    validator = require('express-validator'),
+    LocalStrategy = require('passport-local').Strategy,
+    routes = require('./routes/index'),
+    users = require('./routes/users'),
+    api = require('./routes/api/api'),
+    ajax = require('./routes/ajax'),
+    node = require('./routes/node'),
+    User = require('./models/user'),
+    admin = require('./routes/admin'),
+    teacher = require('./routes/handlers/teacher'),
+    subject = require('./routes/handlers/subject'),
+    department = require('./routes/handlers/department'),
+    designation = require('./routes/handlers/designation'),
+    student = require('./routes/handlers/student');
 
 
 // LOAD ENV FILE
@@ -37,21 +39,13 @@ db.on('error', function (error) {
     console.log('Could not Connect to database');
     console.log(error);
 });
-
-
-// connect flash
 app.use(flash());
-// view engine
 app.engine('handlebars',exphbs({defaultLayout: 'main'}));
 app.set('view engine','handlebars');
-
-//body parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(validator());
 app.use(express.json());
-
-//Express session
 app.use(session({
     secret:'secret',
     saveUninitialized:true,
@@ -59,7 +53,32 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-//Routing
+passport.use('rohit', new LocalStrategy( async (username,password,done)=>{
+    try {
+        let user = await User.fetchByUsername(username),
+            isMatch = await User.comparePassword(password,user.password);
+            if (isMatch){
+                return done(null,user);
+            }
+            else{
+                return done(null,false,{message:"Invalid Password"});
+            }
+    }catch (e) {
+        console.log(e);
+        return done(null,false,{message:"unknown user"});
+    }
+}));
+passport.serializeUser((user, done) =>{
+    done(null, user.id);
+});
+passport.deserializeUser( async (id, done) => {
+    try {
+        let user = await User.fetchUserById(id);
+        done(null,user);
+    }catch (e) {
+        done(e);
+    }
+});
 app.use('/',(req,res,next)=> {
     res.locals.success_msg = req.flash('success_msg');
     res.locals.error_msg = req.flash('error_msg');
@@ -70,9 +89,12 @@ app.use('/',(req,res,next)=> {
     next();
 });
 app.use(express.static('public'));
-app.use('/users',users);
-app.use('/',routes);
 app.use('/api',api);
+app.use('/',routes);
+app.use('/',isLoggedIn,(req,res,next)=>{
+    next();
+ });
+app.use('/user',users);
 app.use('/teacher',teacher);
 app.use('/student',student);
 app.use('/department',department);
@@ -104,3 +126,20 @@ Handlebars.registerHelper('exCond', function (v1,v2,options) {
     else
         return options.inverse(this);
 });
+Handlebars.registerHelper('_section', function(name, options){
+    if(!this._section){
+        this._section = new Object();
+        this._section[name] = options.fn(this);
+    }
+    return /* options.fn(this) */;
+});
+/*      User defined Functions      */
+function isLoggedIn(req,res,next){
+    if (req.isAuthenticated() && req.url === '/user/login') {
+        return res.redirect('/users/dashboard');
+    } else if (req.isAuthenticated() || req.url==='/apilogin' || req.url === '/user/login') {
+        return next();
+    } else
+        req.flash('error_msg','you must login first')
+        return res.redirect('/user/login');
+}

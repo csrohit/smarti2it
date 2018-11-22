@@ -21,7 +21,7 @@ router.get('/',async (req,res)=>{
             return res.send(subjects);
         }
         let subjects = await Subject.fetchSubjects({},{select:'name'});
-        return res.render('subject/list',{'subjects':subjects});
+        return res.render('general/list',{'items':subjects,'h2':'Subjects','route':'subject'});
     }catch(e){
         console.log(e);
         return res.send(e);
@@ -152,8 +152,8 @@ router.post('/', async(req,res)=>{
         return res.redirect('/subject/'+subject._id);
     }catch(e){
         console.log(e);
-        req.flash('error_msg','Unable to create student');
-        return res.redirect('/student/create');
+        req.flash('error_msg','Unable to create subject');
+        return res.redirect('/subject/create');
     }
 });
 module.exports = router;

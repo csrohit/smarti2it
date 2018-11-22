@@ -5,39 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Test</title>
   <link rel="stylesheet" href="./public/vendors/css/grid.css">
-<!--  <link rel="stylesheet" href="./public/resources/css/s.css">-->
+  <link rel="stylesheet" href="./public/resources/css/s.css">
 </head>
 <body>
+  <nav>
+      <ul class="main-nav">
+          <li><a href="/">Home</a></li>
+          <li><a href="/admin/cp">CP</a></li>
+          {{#if user}}          
+              <li><a href="/user/dashboard">Dashboard</a></li>
+              <li><a href="/user/profile">Profile</a></li>
+              <li><a href="/user/logout">Logout</a></li>
+          {{else}}
+              <li><a href="/user/login">Login</a></li>
+          {{/if}}
+      </ul>
+  </nav>
 
-<script>
-
-    function test(){    let list = document.getElementById('list'),
-        p = document.getElementById('op');
-        let collection = list.selectedOptions;
-//        alert(collection.length);
-                    let o='';
-        for(let i=0; i<collection.length;i++){
-         o+=   collection[i].label+"<br>";
-        }
-                    p.innerHTML = o;
-
-    }
-</script>
-<label for="list">List : </label><br>
-<select name="list" multiple id="list">
-    <option value="a">A</option>
-    <option value="b">B</option>
-    <option value="c">C</option>
-    <option value="d">D</option>
-    <option value="e">E</option>
-    <option value="f">F</option>
-</select>
-<button onclick="test()">Click</button>
-
-<p id="op">
-    fth
-</p>
-
-<!--  <script src="./public/resources/js/script.js"></script>-->
+  <script src="./public/resources/js/script.js"></script>
 </body>
 </html>
+    

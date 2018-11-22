@@ -1,0 +1,25 @@
+<div class="form-container">
+    <form {{#if update}} action="javascript:update('department')" {{else}} method="POST" action="/department" {{/if}}>
+        <h3>{{#if update}}Update{{else}}create{{/if}} Department</h3>
+        {{#if errors}}
+            {{#each errors}}
+                <div class="msg err ">
+                    {{#with this}}
+                        {{msg}}
+                    {{/with}}
+                </div>
+            {{/each}}
+        {{/if}}
+        <div class="input-field">
+            <label for="name">Name :</label>
+            <input type="text" name="name" id="name" required {{#if department}} value="{{department.name}}" {{else if data}} value="{{data.name}}" {{/if}}>
+        </div>
+        {{#if department}} <input type="hidden" name="_id" id="_id" value="{{ department._id }}"> {{/if}}
+        <div class="input-field">
+            <button type="submit" class="btn btn-submit" name="department-submit">Submit</button>
+        </div>
+    </form
+</div>
+
+
+{{#_section 'title'}}new Department | Moodle{{/_section}}

@@ -15,7 +15,7 @@ const express = require('express'),
 router.get('/', async (req, res)=>{
     try{
         let students = await User.fetchUsers({'rank':'student'},{select:'name'});
-        return res.render('student/list',{'students':students});
+        return res.render('general/list',{'items':students,'h2':'Students','route':'student'});
     }catch(e){
         return res.send(e);
     }   

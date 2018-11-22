@@ -80,3 +80,25 @@ module.exports.fetchDepartmentById = (_id,options)=>{
         }
     })
 };
+module.exports.update = (_id, set)=>{
+    return new Promise( async (resolve,reject)=>{
+        try{
+            let query = Department.updateOne({'_id':_id},{$set:set});
+            query = await query.exec();
+            return resolve(query);
+        }catch(e){
+            return reject("Error updating department "+e);
+        };
+    });
+};
+module.exports.delete = _id =>{
+    return new Promise( async (resolve, reject)=>{
+        try{
+            let query = Department.findByIdAndDelete(_id);
+            query = await query.exec();
+            return resolve(query);
+        }catch(e){
+            return reject("Error deleting department "+e);
+        }
+    });
+};

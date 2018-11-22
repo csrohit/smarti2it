@@ -9,7 +9,7 @@ const express = require('express'),
     Class = require('../models/class'),
     Department = require('../models/department');
 
-passport.use('rohit', new LocalStrategy( async (username,password,done)=>{
+/* passport.use('rohit', new LocalStrategy( async (username,password,done)=>{
     try {
         let user = await User.fetchByUsername(username),
             isMatch = await User.comparePassword(password,user.password);
@@ -20,7 +20,7 @@ passport.use('rohit', new LocalStrategy( async (username,password,done)=>{
                 return done(null,false,{message:"Invalid Password"});
             }
     }catch (e) {
-        console.log("User not found");
+        console.log(e);
         return done(null,false,{message:"unknown user"});
     }
 }));
@@ -35,58 +35,48 @@ passport.deserializeUser( async (id, done) => {
         done(e);
     }
 });
-
+ */
 /*      Routes      */
-router.use('/',isLoggedIn,(req,res,next)=>{
-   next();
-});
+// router.use('/',isLoggedIn,(req,res,next)=>{
+//    next();
+// });
 router.get('/login',(req,res)=>{
     res.render('auth/login', {title: "Login | Moodle"});
 });
 router.post('/login',passport.authenticate('rohit',{
-    failureRedirect: '/users/login',
-    successRedirect : '/users/dashboard',
+    failureRedirect: '/user/login',
+    successRedirect : '/user/dashboard',
     failureFlash: true
-
 }));
-router.get('/dashboard',(req,res)=>{
-    res.render('users/dashboard',{title:"Dashboard | Moodle"});
-})
-router.get('/profile',async (req,res)=>{
-    try {
-        let user = await User.get(req.user.username,['profile.profile','designation']);
-        let profile;
-        if (user.profile.kind === 'Student'){
-            profile = await Student.fetchStudent({_id:user.profile.profile},['department']);
-            res.render('profile/student',{profile:profile,designation:user.designation});
-        }
-        else{
-            profile = await Teacher.fetchTeacher({_id:user.profile.profile},['department','subject']);
-            console.log(profile);
-            res.render('profile/teacher',{profile:profile,designation:user.designation});
-        }
-
-    }catch (e) {
-        res.send(e);
-    }
-});
 router.get('/logout',  (req, res) => {
     req.logout();
     if (req.headers.referer === 'http://localhost:3000/users/pwd')
         req.flash('success_msg','Password has been changed successfully');
     else
         req.flash('success_msg', "You have been logged out");
-    res.redirect('/users/login');
+    res.redirect('/user/login');
+});
+router.get('/dashboard',(req,res)=>{
+    res.render('user/dashboard');
+})
+router.get('/profile',async (req,res)=>{
+    try {
+        let user = await User.fetchUserById(req.user._id,{populate:[{'path':'designation'}],select:'-password'});
+        if(user.rank === 'teacher'){
+            let teacher = await Teacher.fetchTeacherById(user.profile,{'populate':[{'path':'department','select':'name'},{'path':'subject','select':'name'}]});
+            teacher = teacher.toObject();
+            delete teacher._id;
+            return res.render('teacher/profile',{'teacher':{...user.toObject(),...teacher}});
+        }
+        let student = await Student.fetchStudentById(user.profile,{'populate':[{'path':'department','select':'name'}]});
+        student = student.toObject();
+        delete student._id;
+        return res.render('student/profile',{'student':{...user.toObject(),...student}});
+    }catch (e) {
+        res.send(e);
+    }
 });
 
-/*      User defined Functions      */
-function isLoggedIn(req,res,next){
-    if (req.isAuthenticated() && req.url === '/login') {
-        return res.redirect('/users/dashboard');
-    } else if (req.isAuthenticated() || req.url==='/apilogin' || req.url === '/login') {
-        return next();
-    } else
-        return res.redirect('/users/login');
-}
+
 
 module.exports = router;

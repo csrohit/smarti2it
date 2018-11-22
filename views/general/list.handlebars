@@ -1,22 +1,21 @@
-
 <h2>{{h2}}</h2>
  <div class="container">
-<!--   Search bar     -->
+{{!-- Search Bar --}}
     <div class="row">
         <div class="col span-5-of-6 search-bar">
             <input type="search" name="" placeholder="search" id="">
         </div>
         <div class="col span-1-of-6 search-bar">
-            <a href="javascript:alert('Add new Subject')"><button class="btn btn-green"><b><i class="icon ion-md-add"></i></b></button></a>
+            <a href="/{{@root.route}}/create"><button class="btn btn-green"><b><i class="icon ion-md-add"></i></b></button></a>
         </div>
     </div>
-    
-<!--    Card view of subjects     -->
-{{#each subjects}}
-    <div class="row card">
-        {{#with this}}
-            <a href="/subject/{{value}}">{{name}}</a>
-        {{/with}}     
-    </div>
+{{!-- Card view of items --}}
+{{#each items}}
+          <div class="card">
+          {{#with this}}
+         <a href="/{{@root.route}}/{{_id}}">{{name}}</a>
+          {{/with}}
+     </div>
 {{/each}}
  </div>
+{{#_section 'title'}}{{h2}} | Moodle{{/_section}}

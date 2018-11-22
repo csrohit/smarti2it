@@ -1,22 +1,22 @@
-{{#with student}}    
+{{#with department}}    
  <div class="container">
     <div class="row">
         <div class="col span-4-of-6 search-bar">
             <h2>{{name}}</h2>
         </div>
         <div class="col span-1-of-6 search-bar">
-            <a href="/student/update/{{_id}}"><button class="btn btn-green">update</button></a>
+            <a href="/department/update/{{_id}}"><button class="btn btn-green">update</button></a>
         </div>
         <div class="col span-1-of-6 search-bar">
-            <a href="javascript:del('{{_id}}','student')"><button class="btn btn-red"><i class="icon ion-md-trash"></i></button></a>
+            <a href="javascript:del('{{_id}}','department')"><button class="btn btn-red"><i class="icon ion-md-trash"></i></button></a>
         </div>
     </div>
      <div class="field row">
-             <span class="col span-1-of-3">Username : </span>
-             <span class="col span-2-of-3">{{username}}</span>
+             <span class="col span-1-of-3">Teacher : </span>
+             <span class="col span-2-of-3">{{teacher.name}}</span>
      </div>
-     <div class="field row">
-             <span class="col span-1-of-3">Email : </span>
+     {{!-- <div class="field row">
+             <span class="col span-1-of-3">faculty : </span>
              <span class="col span-2-of-3">{{email}}</span>
      </div>
      <div class="field row">
@@ -38,7 +38,7 @@
      <div class="field row">
              <span class="col span-1-of-3">Enrolled in : </span>
              <span class="col span-2-of-3">{{classs}}</span>
-     </div>
+     </div> --}}
  </div>
 {{/with}}
-{{#_section 'title'}}{{student.name}} | Moodle{{/_section}}
+{{#_section 'title'}}{{department.name}} | Moodle{{/_section}}

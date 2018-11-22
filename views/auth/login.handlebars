@@ -1,23 +1,6 @@
-<nav class="clearfix">
-    {{> nav}}
-           {{#if success_msg}}
-            <div id="modal">
-                <div class="modal-content msg success_msg">
-                    <p>{{ success_msg }}</p>
-                </div>
-            </div>
-        {{/if}}
-        {{#if error_msg}}
-            <div id="modal">
-                <div class="modal-content msg error_msg">
-                    <p>{{ error_msg }}</p>
-                </div>
-            </div>
-        {{/if}}
-   </nav>
-   
+<nav class="clearfix">  
 <div class="form-container">
-    <form method="post" action="/users/login">
+    <form method="post" action="/user/login">
     <h1>log in</h1>
         <div class="input-field">
             <label for="username">Username:</label><br>
@@ -27,8 +10,13 @@
             <label for="password">Password</label><br>
             <input type="password" name="password">
         </div>
-        <div class="input-field">
-        <button type="submit" name="login-submit">Log in</button><br>
+        <div class="input-field row">
+            <div class="col span-1-of-2">
+                <a href="/user/login"><button type="submit" id="btn-cancel" class="btn btn-red">Cancel</button></a>
+            </div>
+            <div class="col span-1-of-2">
+                <button type="submit" class="btn btn-submit">Submit</button>
+            </div>
         </div>
     </form>
 </div>

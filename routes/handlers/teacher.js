@@ -22,7 +22,7 @@ router.get('/', async (req,res)=>{
             return res.send(result);
         }
        let teachers = await User.fetchUsers({'rank':'teacher'},{select:'name'});
-       return res.render('teacher/list',{'teachers':teachers})
+       return res.render('general/list',{'items':teachers,'route':'teacher','h2':'Teachers'})
     }catch(e){
         res.send(e);
     }
@@ -135,7 +135,7 @@ router.put('/', async (req,res)=>{
         let departments = await Department.fetchDepartments({},{select:'name'}),
         designations = await Designation.fetchDesignations({},{select:'name'});
         if(errors){
-            return res.render('student/create',{'errors':errors,"update":true,'data':req.body,'designations':designations,'departments':departments});
+            return res.render('teacher/create',{'errors':errors,"update":true,'data':req.body,'designations':designations,'departments':departments});
         }
         let user = await User.fetchUserById(_id,{'select':'-password -rank'}),
         teacher = await Teacher.fetchTeacherById(user.profile);
@@ -162,7 +162,8 @@ router.put('/', async (req,res)=>{
         return res.send('200');
     }catch(e){
         console.log(e);
-        return res.sendStatus(INTERNAL_SERVER_ERROR);
+        req.flash('error_msg','Unavle to update teacher');
+        return res.send('400');
     }
 });
 router.delete('/', async (req, res)=>{

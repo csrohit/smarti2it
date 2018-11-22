@@ -85,9 +85,9 @@ h2:after {
     display: inline-block;
     transition: all 0.2s;
     cursor: pointer;
-    height: 100%;
-    margin: 0 auto;
+/*    height: 100%;*/
     width: 90%;
+    margin: 0 auto;
     font-size: 100%;
     color: #fff;
 }
@@ -98,7 +98,7 @@ h2:after {
     background-color: red;
 }
 .btn-submit{
-    width: 100%;
+/*    width: 100%;*/
     background-color: blue;
 }
 
@@ -151,7 +151,10 @@ header {
     height: 100vh;
     overflow: hidden;
 }
-
+nav{
+    background-color: #fff;
+    width: 100%;
+}
 
 .main-nav {
     float: right;
@@ -163,7 +166,6 @@ header {
     display: inline-block;
     margin: 3px;
 }
-/*
 
 a:link,
 a:visited {
@@ -180,8 +182,9 @@ a:visited {
 .main-nav a:hover,
 .main-nav a:active {
     border-bottom: 1px solid #227ce6;
-    color: #d9d9d9;
+/*    color: #d9d9d9;*/
 }
+/*
 */
 
 .hero-text-box {
