@@ -1,5 +1,5 @@
 const Department = require('../../models/department'),
-    Function = require('../../functions'),
+    Function = require('../../lib/functions'),
     ObjectId = require('mongoose').Types.ObjectId,
     router = require('express').Router();
 

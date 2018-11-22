@@ -1,7 +1,7 @@
 const mongoose = require('mongoose'),
-    Function = require('../functions'),
+    Function = require('../lib/functions'),
     ObjectId = require('mongoose').Types.ObjectId,
-    Err = require('../err'),
+    Err = require('../lib/err'),
     bcrypt = require('bcryptjs');
 const Schema = mongoose.Schema;
 

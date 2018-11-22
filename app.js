@@ -41,7 +41,7 @@ db.on('error', function (error) {
 });
 let hbs = exphbs.create({
     defaultLayout:'main',
-    helpers:helpers
+    helpers: helpers
 })
 app.use(flash());
 app.engine('handlebars',hbs.engine);

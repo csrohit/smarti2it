@@ -7,7 +7,7 @@ const express = require('express'),
     Department = require('../../models/department'),
     Teacher= require('../../models/teacher'),
     validator = require('express-validator'),
-    Function = require('../../functions');
+    Function = require('../../lib/functions');
 const INTERNAL_SERVER_ERROR = 500, NOT_IMPLEMENTED = 501;
 
 router.get('/', async (req,res)=>{

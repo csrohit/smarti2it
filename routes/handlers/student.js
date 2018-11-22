@@ -7,8 +7,8 @@ const express = require('express'),
     Department = require('../../models/department'),
     Teacher= require('../../models/teacher'),
     Student= require('../../models/student'),
-    err = require('../../err'),
-    Function = require('../../functions'),
+    err = require('../../lib/err'),
+    Function = require('../../lib/functions'),
     validator = require('express-validator');
 
 

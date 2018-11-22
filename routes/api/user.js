@@ -1,6 +1,6 @@
 const User = require('../../models/user'),
     Subject = require('../../models/subject'),
-    Function = require('../../functions'),
+    Function = require('../../lib/functions'),
     router = require('express').Router();
 
 

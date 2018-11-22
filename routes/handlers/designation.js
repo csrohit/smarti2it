@@ -1,5 +1,5 @@
 const Designation = require('../../models/designation'),
-    Function = require('../../functions'),
+    Function = require('../../lib/functions'),
     router = require('express').Router();
 
 router.get('/', async (req, res)=>{

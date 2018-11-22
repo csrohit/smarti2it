@@ -1,7 +1,7 @@
 const mongoose = require('mongoose'),
     ObjectId = require('mongoose').Types.ObjectId,
-    err = require('../err'),
-    Function = require('../functions'),
+    err = require('../lib/err'),
+    Function = require('../lib/functions'),
     Schema = mongoose.Schema;
 
 const studentSchema = new Schema({
