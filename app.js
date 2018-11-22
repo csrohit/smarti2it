@@ -6,7 +6,7 @@ const express = require('express'),
     session = require('express-session'),
     bodyParser = require('body-parser'),
     result = require('dotenv').config(),
-    Handlebars = require('handlebars'),
+    // Handlebars = require('handlebars'),
     flash = require('connect-flash'),
     validator = require('express-validator'),
     LocalStrategy = require('passport-local').Strategy,
@@ -21,6 +21,7 @@ const express = require('express'),
     subject = require('./routes/handlers/subject'),
     department = require('./routes/handlers/department'),
     designation = require('./routes/handlers/designation'),
+    helpers = require('./lib/helpers'),
     student = require('./routes/handlers/student');
 
 
@@ -28,7 +29,6 @@ const express = require('express'),
 if (result.error) {
     console.log("error loading env file"+result.error);
 }
-
 // Connect to database
 mongoose.connect(process.env.DB_HOST+'/'+process.env.DB_NAME, { useNewUrlParser: true });
 const db = mongoose.connection;
@@ -39,8 +39,12 @@ db.on('error', function (error) {
     console.log('Could not Connect to database');
     console.log(error);
 });
+let hbs = exphbs.create({
+    defaultLayout:'main',
+    helpers:helpers
+})
 app.use(flash());
-app.engine('handlebars',exphbs({defaultLayout: 'main'}));
+app.engine('handlebars',hbs.engine);
 app.set('view engine','handlebars');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
@@ -113,27 +117,6 @@ app.listen(process.env.PORT,()=>{
     console.log("Server started on port " + process.env.PORT);
 });
 
-// Custom Helpers
-Handlebars.registerHelper('ifCond', function (v1,v2,options) {
-    if (v1 == v2)
-        return options.fn(this);
-    else
-        return options.inverse(this);
-});
-Handlebars.registerHelper('exCond', function (v1,v2,options) {
-    if (v1 != v2)
-        return options.fn(this);
-    else
-        return options.inverse(this);
-});
-Handlebars.registerHelper('_section', function(name, options){
-    if(!this._section){
-        this._section = new Object();
-        this._section[name] = options.fn(this);
-    }
-    return /* options.fn(this) */;
-});
-/*      User defined Functions      */
 function isLoggedIn(req,res,next){
     if (req.isAuthenticated() && req.url === '/user/login') {
         return res.redirect('/users/dashboard');
