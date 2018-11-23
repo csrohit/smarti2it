@@ -78,7 +78,7 @@ router.post('/', async (req,res)=>{
     try{
         req.checkBody('name','Name field required').notEmpty().matches(/^([a-zA-Z]+\s?)?([a-zA-Z]+)$/g).withMessage('Invalid name');
         req.checkBody('email','email field required').notEmpty().isEmail().matches(/@isquareit.edu.in?$/g).withMessage("Invalid Email");
-        req.checkBody('username','username field required').notEmpty().matches(/^[a-zA-Z0-9.\w]+$/g).withMessage("Invalid username");
+        req.checkBody('username','username field required').notEmpty().matches(/^[a-zA-Z\.\_]+$/g).withMessage("Invalid username");
         req.checkBody('department','Department field required').notEmpty().isMongoId().withMessage('Invalid department Id');
         req.checkBody('subject','Subject field required').notEmpty().isMongoId().withMessage('Invalid subject Id');
         req.checkBody('designation','Designation field required').notEmpty().isMongoId().withMessage('Invalid designation Id');
@@ -163,7 +163,7 @@ router.put('/', async (req,res)=>{
         return res.send('200');
     }catch(e){
         console.log(e);
-        req.flash('error_msg','Unavle to update teacher');
+        req.flash('error_msg','Unable to update teacher');
         return res.send('400');
     }
 });

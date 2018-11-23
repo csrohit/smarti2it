@@ -28,7 +28,7 @@ router.get('/update/:_id', async (req, res)=>{
         if(!ObjectId.isValid(_id))
             return res.json([{'location':'params','msg':'Invalid ObjectId'}]);
         
-        let user = await User.fetchUserById(_id,{'populate':[{'path':'designation','select':'name'}],'select':'-password -rank'});
+        let user = await User.fetchUserById(_id,{'select':'-password -rank'});
         let student = await Student.fetchStudentById(user.profile,[{'path':'department','select':'name'}]);
         student = student.toObject();
         delete student._id;
@@ -58,7 +58,7 @@ router.get('/:_id', async (req,res)=>{
             return res.json([{'location':'params','msg':'ObjectId required'}]);
         if(!ObjectId.isValid(_id))
             return res.json([{'location':'params','msg':'Invalid ObjectId'}]);
-        let user = await User.fetchUserById(_id,{'populate':[{'path':'designation','select':'name'}],'select':'-password -rank'});
+        let user = await User.fetchUserById(_id,{'select':'-password -rank'});
         let student = await Student.fetchStudentById(user.profile,{'populate':[{'path':'department','select':'name'}]});
         student = student.toObject();
         delete student._id;
@@ -69,9 +69,20 @@ router.get('/:_id', async (req,res)=>{
 });
 router.put('/', async (req, res)=>{
     try{
+        let _id = req.body._id;
+        if(!_id || !ObjectId.isValid(_id)){
+            req.flash('error_msg','Invalid ObjectId');
+            return res.redirect('/student');
+        }
+        let user = await User.fetchUserById(_id,{'select':'-password -rank'}),
+        student = await Student.fetchStudentById(user.profile);
+        if(!user || !student){
+            req.flash('error_msg','User/student does not exist');
+            return res.redirect('/student');
+        }
         req.checkBody('name','Name field required').notEmpty().matches(/^([a-zA-Z]+\s?)?([a-zA-Z]+)$/g).withMessage('Invalid name');
         req.checkBody('email','email field required').notEmpty().isEmail().matches(/@isquareit.edu.in?$/g).withMessage("Invalid Email");
-        req.checkBody('username','username field required').notEmpty().matches(/^[a-zA-Z0-9.\w]+$/g).withMessage("Invalid username");
+        req.checkBody('username','username field required').notEmpty().matches(/^[a-zA-Z\.\_]+$/g).withMessage("Invalid username");
         req.checkBody('roll_no','Roll no. field required').notEmpty().isInt({min:1,max:85}).withMessage("Invalid Roll no");
         req.checkBody('department','Department field required').notEmpty().isMongoId().withMessage('Invalid department Id');
         req.checkBody('designation','Designation field required').notEmpty().isMongoId().withMessage('Invalid designation Id');
@@ -80,11 +91,8 @@ router.put('/', async (req, res)=>{
         let departments = await Department.fetchDepartments({},{select:'name'}),
         designations = await Designation.fetchDesignations({},{select:'name'});
         if(errors){
-            return res.render('student/create',{'errors':errors,"update":true,'data':req.body,'designations':designations,'departments':departments});
+            return res.render('student/create',{layout:null,'errors':errors,"update":true,data:req.body,'designations':designations,'departments':departments});
         }
-        let _id = req.body._id;
-        let user = await User.fetchUserById(_id,{'select':'-password -rank'}),
-        student = await Student.fetchStudentById(user.profile);
         let set = new Object();
 
         let name = req.body.name,
@@ -114,7 +122,7 @@ router.post('/', async (req, res)=>{
     try{
         req.checkBody('name','Name field required').notEmpty().matches(/^([a-zA-Z]+\s?)?([a-zA-Z]+)$/g).withMessage('Invalid name');
         req.checkBody('email','email field required').notEmpty().isEmail().matches(/@isquareit.edu.in?$/g).withMessage("Invalid Email");
-        req.checkBody('username','username field required').notEmpty().matches(/^[a-zA-Z0-9.\w]+$/g).withMessage("Invalid username");
+        req.checkBody('username','username field required').notEmpty().matches(/^[a-zA-Z\.\_]+$/g).withMessage("Invalid username");
         req.checkBody('roll_no','Roll no. field required').notEmpty().isInt({min:1,max:85}).withMessage("Invalid Roll no");
         req.checkBody('department','Department field required').notEmpty().isMongoId().withMessage('Invalid department Id');
         req.checkBody('designation','Designation field required').notEmpty().isMongoId().withMessage('Invalid designation Id');
