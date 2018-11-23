@@ -25,65 +25,56 @@
         <div class="input-field">
             <label for="department">Department</label>
             <select name="department" required id="department" onchange="departmentSelected('subject')">
-                {{#if data}}
-                    {{#each departments}}
-                        {{#ifCond @root.data.department _id}}  
-                        <option value="{{../_id}}" selected>{{../name}}</option>  
-                        {{else}}   
-                        <option value="{{../_id}}">{{../name}}</option>  
-                        {{/ifCond}}
-                    {{/each}}            
-                        {{else}}
-                    {{#each departments}}
-                        <option value="{{_id}}">{{name}}</option>                
-                    {{/each}}
+            {{#each departments}}
+            {{#if @root.data}}
+                {{#ifCond @root.data.department _id}}
+                <option value="{{../_id}}" selected>{{../name}}</option>
+                {{else}}
+                <option value="{{../_id}}">{{../name}}</option>
+                {{/ifCond}}
+            {{else if @root.teacher}}
+                {{#ifCond @root.teacher.department _id}}
+            <option value="{{../_id}}" selected>{{../name}}</option>
+                {{else}}
+    <option value="{{../_id}}">{{../name}}</option>
+                {{/ifCond}}
                 {{/if}}
+            {{/each}}
             </select>
         </div>
-
         <div class="input-field">
-            {{!-- <label for="subject">Subject</label>
-            <select name="subject" required id="subject"> --}}
-            {{!-- </select> --}}
             <label for="subject">Subject</label>
             <select name="subject" required id="subject">
-                {{!-- {{#if data}}
-                    {{#each subjects}}
-                        {{#ifCond @root.data.subject _id}}  
-                        <option value="{{../_id}}" selected>{{../name}}</option>  
-                        {{else}}   
-                        <option value="{{../_id}}">{{../name}}</option> 
-                        {{/ifCond}}
-                    {{/each}}            
-                {{else}}
-                {{/if}} --}}
                 {{#each subjects}}
-                        <option value="{{_id}}">{{name}}</option>   
+                    {{#ifCond @root.teacher.subject _id}}  
+                    <option value="{{../_id}}" selected>{{../name}}</option>  
+                    {{else}}   
+                    <option value="{{../_id}}">{{../name}}</option> 
+                    {{/ifCond}}
                 {{/each}}
             </select>
         </div>
-
-
-
         <div class="input-field">
             <label for="designation">Designation : </label>
             <select name="designation" required id="designation">
-                {{#if data}}
-                    {{#each designations}}
-                        {{#ifCond @root.data.designation _id}}  
-                        <option value="{{../_id}}" selected>{{../name}}</option>  
-                        {{else}}   
-                        <option value="{{../_id}}">{{../name}}</option>  
-                        {{/ifCond}}
-                    {{/each}}            
-                        {{else}}
-                    {{#each designations}}
-                        <option value="{{_id}}">{{name}}</option>                
-                    {{/each}}
-                {{/if}}
+            {{#each designations}}
+            {{#if @root.data}}
+                {{#ifCond @root.data.designation _id}}
+                <option value="{{../_id}}" selected>{{../name}}</option>
+                {{else}}
+                <option value="{{../_id}}">{{../name}}</option>
+                {{/ifCond}}
+            {{else if @root.teacher}}
+                {{#ifCond @root.teacher.designation _id}}
+            <option value="{{../_id}}" selected>{{../name}}</option>
+                {{else}}
+<option value="{{../_id}}">{{../name}}</option>
+                {{/ifCond}}
+            {{/if}}
+            {{/each}}
             </select>
         </div>
-            <input type="hidden" name="_id" value={{teacher._id}}>
+            <input type="hidden" name="_id" {{#if teacher}} value="{{ teacher._id }}" {{else if data}} value="{{data._id}}" {{/if}}>
             <div class="input-field">
                 <button type="submit" class="btn btn-submit" name="teacher-submit">Submit</button>
             </div>
