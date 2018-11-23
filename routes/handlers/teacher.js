@@ -121,7 +121,7 @@ router.put('/', async (req,res)=>{
         let  _id = req.body._id;
         if(!_id || !ObjectId.isValid(_id)){
             req.flash('error_msg','Invalid ObjectId');
-            return res.redirect('/teacher');
+            return res.send('400');
         }
         // req.checkBody('_id','ObjectId field required').notEmpty().isMongoId().withMessage('Invalid ObjectId');
         req.checkBody('name','Name field required').notEmpty().matches(/^([a-zA-Z]+\s?)?([a-zA-Z]+)$/g).withMessage('Invalid name');
@@ -134,8 +134,9 @@ router.put('/', async (req,res)=>{
         const errors = req.validationErrors(true);        
         let departments = await Department.fetchDepartments({},{select:'name'}),
         designations = await Designation.fetchDesignations({},{select:'name'});
+        console.log(req.body);
         if(errors){
-            return res.render('teacher/create',{'errors':errors,"update":true,'data':req.body,'designations':designations,'departments':departments});
+            return res.render('teacher/create',{layout:null,'errors':errors,"update":true,'data':req.body,'designations':designations,'departments':departments});
         }
         let user = await User.fetchUserById(_id,{'select':'-password -rank'}),
         teacher = await Teacher.fetchTeacherById(user.profile);
