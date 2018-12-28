@@ -1,6 +1,4 @@
-document.getElementById('btn-cancel').addEventListener('click',e=>{
-    e.preventDefault();
-});
+
 async function update(route){
     const form = document.querySelector('form');
     try {
@@ -10,12 +8,18 @@ async function update(route){
                 return window.location.href = '/'+route+'/'+form.elements['_id'].value;
             else if(response === '400')
                 return window.location.href = '/'+route;
-            return document.write(response);
+                let nav = document.querySelector('nav'),
+                body = document.querySelector('body');  
+                body.innerHTML = '';
+                body.appendChild(nav);
+                body.innerHTML += response
+                departmentSelected('subject');
+        return;
+            // return document.write(response);
         }catch (e) {
             console.log(e);
         }
-    }
-    
+    }    
 async function del(_id,route){
     try{
         let data = "_id="+_id;
@@ -39,7 +43,9 @@ async function departmentSelected(route){
             targetSelect.add(option);
         }
 }
-
+function test(){
+    alert("blah");
+}
 
 // User defined functions
 function ajax(method, theUrl,responseType, data=null) {

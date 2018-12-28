@@ -101,6 +101,26 @@ h2:after {
 /*    width: 100%;*/
     background-color: blue;
 }
+.btn-full {
+    background: #227ce6;
+    border: 1px solid #227ce6;
+    color: #ffffff;
+}
+
+.btn-ghost {
+    border: 1px solid #227ce6;
+    color: #227ce6;
+    background: transparent;
+    margin-left: 20px;
+}
+
+.btn-full:hover {
+    background: #0059c3;
+}
+
+.btn-ghost:hover {
+    color: #fff;
+}
 
 
 
