@@ -9,7 +9,8 @@ const express = require('express'),
     Student= require('../../models/student'),
     err = require('../../lib/err'),
     Function = require('../../lib/functions'),
-    validator = require('express-validator');
+    validator = require('express-validator'),
+    nodemailer = require('nodemailer');
 
 
 router.get('/', async (req, res)=>{
@@ -58,7 +59,7 @@ router.get('/:_id', async (req,res)=>{
             return res.json([{'location':'params','msg':'ObjectId required'}]);
         if(!ObjectId.isValid(_id))
             return res.json([{'location':'params','msg':'Invalid ObjectId'}]);
-        let user = await User.fetchUserById(_id,{'select':'-password -rank'});
+        let user = await User.fetchUserById(_id,{'populate':[{'path':'designation','select':'name'}],'select':'-password -rank'});
         let student = await Student.fetchStudentById(user.profile,{'populate':[{'path':'department','select':'name'}]});
         student = student.toObject();
         delete student._id;
@@ -94,7 +95,7 @@ router.put('/', async (req, res)=>{
             return res.render('student/create',{layout:null,'errors':errors,"update":true,data:req.body,'designations':designations,'departments':departments});
         }
         let set = new Object();
-
+        console.log(req.body);
         let name = req.body.name,
         designation = req.body.designation,
         username = req.body.username,
@@ -209,25 +210,30 @@ router.delete('/', async (req, res)=>{
 });
 router.patch('/', async (req,res)=>{
     try{
-        // let user = await User.fetchUserWithFields('5bf31e7ce523043bb7e3ca62',{'select':['designation','name'],'populate':[{'path':'designation','select':['name','permissions']}]});
-        // return res.send(user);
-        let user = await User.fetchUserById('5beec4dc01a810402dd8df1e',{'populate':[{'path':'designation','select':'name'}],'select':'-password -rank'});
-        return res.send(user);
-        
-
-        /* 
-        
-        
-            (id, {populate:[],fields:[]})
-        
-        */
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                   user: 'rohitnimkarme.com',
+                   pass: 'Mysite_#12398'
+               }
+           });
+           const mailOptions = {
+            from: 'rohitnimkarme.com', // sender address
+            to: 'nehalnimkar@gmail.com', // list of receivers
+            subject: 'Nodemailer', // Subject line
+            html: '<p>testing the gmail transport serviice of nodemailer</p>'// plain text body
+          };
+          transporter.sendMail(mailOptions, function (err, info) {
+            if(err)
+              return res.send("Error occurred");
+            else
+              return res.send(info);
+         });
 
 
     }catch(e){
         return res.send(e);
-    }
-
-    
+    }  
 
 });
 

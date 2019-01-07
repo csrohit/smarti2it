@@ -95,9 +95,9 @@ app.use('/',(req,res,next)=> {
 app.use(express.static('public'));
 app.use('/api',api);
 app.use('/',routes);
-app.use('/',isLoggedIn,(req,res,next)=>{
-    next();
- });
+// app.use('/',isLoggedIn,(req,res,next)=>{
+//     next();
+//  });
 app.use('/user',users);
 app.use('/teacher',teacher);
 app.use('/student',student);
