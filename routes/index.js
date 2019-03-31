@@ -1,7 +1,7 @@
 const express = require('express'),
     router = express.Router(),
     nodemailer = require('nodemailer'),
-    Handlebars = require('express-handlebars').create({layoutsDir:'./views/statis   '});
+    Handlebars = require('express-handlebars').create({layoutsDir:'./views/static'});
 
 
 

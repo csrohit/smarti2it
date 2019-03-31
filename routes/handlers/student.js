@@ -45,6 +45,8 @@ router.get('/create', async (req, res)=>{
     try{
         let departments = await Department.fetchDepartments({},{select:'name'}),
             designations = await Designation.fetchDesignations({},{select:'name'});
+            console.log(departments);
+            console.log(designations);
     return res.render('student/create',{'designations':designations,'departments':departments});
     }catch(e){
         console.log(e);

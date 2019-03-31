@@ -20,6 +20,10 @@ async function update(route){
             console.log(e);
         }
     }    
+function showDelConfirmation(){
+    let modal = document.createElement('div');
+
+}
 async function del(_id,route){
     try{
         let data = "_id="+_id;
