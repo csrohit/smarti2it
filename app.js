@@ -23,10 +23,7 @@ const express = require('express'),
     forum = require('./routes/handlers/forum'),
     designation = require('./routes/handlers/designation'),
     helpers = require('./lib/helpers'),
-    student = require('./routes/handlers/student'),
-    addRequestId = require('express-request-id')(),
-    morgan = require('morgan');
-
+    student = require('./routes/handlers/student');
 // LOAD ENV FILE
 if (result.error) {
     console.log("error loading env file"+result.error);
@@ -50,7 +47,6 @@ app.engine('handlebars',hbs.engine);
 app.set('view engine','handlebars');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
-app.use(addRequestId);
 app.use(validator());
 app.use(express.json());
 app.use(session({
