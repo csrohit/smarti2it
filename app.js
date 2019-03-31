@@ -20,10 +20,12 @@ const express = require('express'),
     teacher = require('./routes/handlers/teacher'),
     subject = require('./routes/handlers/subject'),
     department = require('./routes/handlers/department'),
+    forum = require('./routes/handlers/forum'),
     designation = require('./routes/handlers/designation'),
     helpers = require('./lib/helpers'),
-    student = require('./routes/handlers/student');
-
+    student = require('./routes/handlers/student'),
+    addRequestId = require('express-request-id')(),
+    morgan = require('morgan');
 
 // LOAD ENV FILE
 if (result.error) {
@@ -48,6 +50,7 @@ app.engine('handlebars',hbs.engine);
 app.set('view engine','handlebars');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
+app.use(addRequestId);
 app.use(validator());
 app.use(express.json());
 app.use(session({
@@ -88,16 +91,16 @@ app.use('/',(req,res,next)=> {
     res.locals.error_msg = req.flash('error_msg');
     res.locals.error = req.flash('error');
     res.locals.user = req.user || "";
-    if ((req.url.indexOf('/vendors/') === -1) && req.url.indexOf('/resources/') === -1 )
+    if ((req.url.indexOf('/vendors/') === -1) && req.url.indexOf('/resources/') === -1 && req.url.indexOf('/favicon.ico')===-1)
         console.log(req.method + " request was made at " + req.url);
     next();
 });
 app.use(express.static('public'));
 app.use('/api',api);
 app.use('/',routes);
-// app.use('/',isLoggedIn,(req,res,next)=>{
-//     next();
-//  });
+app.use('/',isLoggedIn,(req,res,next)=>{
+    next();
+ });
 app.use('/user',users);
 app.use('/teacher',teacher);
 app.use('/student',student);
@@ -107,6 +110,7 @@ app.use('/ajax',ajax);
 app.use('/admin',admin);
 app.use('/designation',designation);
 app.use('/node',node);
+app.use('/forum',forum);
 app.use(function(req, res){
     res.type('text/plain');
     res.status(404);
