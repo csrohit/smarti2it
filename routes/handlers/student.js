@@ -121,6 +121,7 @@ router.put('/', async (req, res)=>{
         return res.send(e);
     }
 });
+
 router.post('/', async (req, res)=>{
     try{
         req.checkBody('name','Name field required').notEmpty().matches(/^([a-zA-Z]+\s?)?([a-zA-Z]+)$/g).withMessage('Invalid name');

@@ -34,6 +34,8 @@ const userSchema = new Schema({
 });
 
 const User = module.exports = mongoose.model('User',userSchema);
+
+
 module.exports.createUser = (newUser)=>{
     return new Promise((resolve,reject)=>{
         bcrypt.genSalt(10,(err,salt)=>{
@@ -81,6 +83,8 @@ module.exports.fetchUserById = (_id,options)=>{
         }
     })
 };
+
+
 module.exports.comparePassword = (candidatePassword, hash)=>{
 return new Promise((resolve,reject)=>{
     bcrypt.compare(candidatePassword, hash, function(err, isMatch) {

@@ -72,7 +72,7 @@ function showSucc(parent, msg) {
     parent.innerHTML = '';
     var errBox = createUserElement(parent, 'div', 'errBox', 'modal-content msg success_msg');
     parent.id = 'modal';
-    msg = insertText(errBox, msg);
+    msg = insertText(errBox, msg);  
 }
 window.addEventListener('click', function (e) {
     if (e.target == document.getElementById('modal')) {
